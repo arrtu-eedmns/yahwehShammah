@@ -1,0 +1,44 @@
+.piece-nav-button {
+    
+    min-width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    box-sizing: border-box;
+    border: none;
+
+    display: grid;
+    grid-auto-flow: column;
+    padding: 0 16px 0 8px;
+    gap: 8px;
+    place-content: center;
+    place-items: center;
+
+    transition:
+        background 0.3s ease,
+        border-radius 0.1s ease
+    ;
+    position: relative;
+
+    input {display: none;}
+
+    :where(*, * *) {
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .piece-label {
+        display: grid;
+        place-content: center;
+        font-weight: 600;
+    }
+
+    &:has(.piece-icon):not(:has(.piece-label)) {
+        padding: 0;
+        border-radius: 100%;
+        aspect-ratio: 1/1;
+    }
+
+    &:has(.piece-label):not(:has(.piece-icon)) { padding: 0 16px;}
+
+    &:has(input:checked) .piece-icon {font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+}

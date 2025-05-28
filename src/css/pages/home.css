@@ -1,0 +1,146 @@
+#page-home {
+    display: grid;
+    overflow: hidden;
+    gap: 1px;
+    .card-list {
+        display: grid;
+        padding: 16px;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        align-items: center;
+        user-select: none;
+        &>*{pointer-events: none;}
+        .numero {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            aspect-ratio: 1/1;
+            font-weight: 900;
+        }
+        .nome {
+            font-size: 20px;
+            border-radius: 4px;
+            text-align: start;
+        }
+        .cantor {
+            font-size: 12px;
+            border-radius: 4px;
+            text-align: start;
+        }
+        &>:where(.numero, .nome):nth-child(-n+15) {
+            animation: list .6s ease-in-out;
+        }
+    }
+}
+
+#popover-letra {
+    display: grid;
+    overflow-y: scroll;
+    &>header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 16px;
+        padding: 16px;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        .numero {
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            aspect-ratio: 1/1;
+            font-weight: 900;
+        }
+        .nome {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .cantor {
+            font-size: 12px;
+            border-radius: 4px;
+            text-align: start;
+        }
+
+    }
+    &>main {
+        display: grid;
+        padding: 0 16px 16px 16px;
+        position: relative;
+        --font-sizes: 5;
+        &>div {
+            display: grid;
+            gap: 4px;
+            font-size: 16px;
+            font-size: 32px;
+
+            &:has(.solo) {--h: 48;}
+            .feminino, .m {--h: 0;}
+            .masculino, .h {--h: 180;}
+            .s, .s {--s: 48%;}
+            &:has(.solo) {&>p {text-decoration: underline;}}
+            &:has(.ministracao ) {&>p {font-weight: 900;}}
+
+            &>.marcadores {
+                display: grid;
+                grid-auto-flow: column;
+                gap: 4px;
+                place-content: start;
+                position: sticky;
+                z-index: 1;
+                top: 0;
+                height: 80px;
+                place-content: center start;
+
+                &>:nth-child(1) {
+                    font-size: 16px;
+                    width: 48px;
+                    height: 48px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 100px;
+                    aspect-ratio: 1/1;
+                    font-weight: 900;
+                }
+                &>span {
+                    font-size: 16px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 100px;
+                    font-weight: 900;
+                    padding: 0 16px;
+                }
+            }
+
+            &>p{
+                font-size: calc(16px + ((var(--font-size) - 1) * 4px));
+                border-radius: 8px;     
+                padding: 16px;
+                &:first-of-type {border-radius: 32px 32px 8px 8px;}
+                &:last-of-type {border-radius: 8px 8px  32px 32px;}
+            }
+            &>* {
+                /* pointer-events: none; */
+            }
+        }
+    }
+    &>footer {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        gap: 16px;
+        padding: 16px;
+        place-content: center;
+        place-items: center;
+        .accent {
+            font-variation-settings:
+            'FILL' 1,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    }
+}
