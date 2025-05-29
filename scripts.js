@@ -46,6 +46,7 @@ function installApp() {
 		if (choiceResult.outcome === "accepted") {
 			console.log("PWA setup accepted");
 			installButton.style.display = "none";
+			installButton.classList.remove("none");
 		} else {
 			console.log("PWA setup rejected");
 		}
