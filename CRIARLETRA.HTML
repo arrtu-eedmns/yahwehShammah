@@ -1,0 +1,237 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editor de Letras</title>
+  <style>
+    * { box-sizing: border-box; }
+    body, html {
+      margin: 0;
+      height: 100%;
+      font-family: sans-serif;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      grid-template-rows: auto 1fr auto;
+      height: 100vh;
+    }
+
+    header {
+      grid-column: 1 / 3;
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      align-items: center;
+    }
+
+    header input {
+      padding: 5px;
+      font-size: 1rem;
+    }
+
+    .entrada {
+      grid-column: 1;
+      grid-row: 2 / 3;
+      background: #f9f9f9;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .entrada textarea {
+      flex: 1;
+      resize: none;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .editor {
+      grid-column: 2;
+      grid-row: 2 / 3;
+      background: #fff;
+      padding: 10px;
+      overflow-y: auto;
+    }
+
+    .copiar {
+      grid-column: 1 / 3;
+      grid-row: 3 / 4;
+      background: #eee;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    .bloco {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fefefe;
+    }
+
+    .linha {
+      display: flex;
+      gap: 10px;
+      margin: 5px 0;
+    }
+
+    input[type="text"], input[type="number"] {
+      flex: 1;
+    }
+
+    .saida {
+      white-space: pre-wrap;
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin-top: 10px;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid">
+    <header>
+      <label>Número:</label>
+      <input type="text" id="numero" value="XXX" size="4">
+      <label>Nome:</label>
+      <input type="text" id="nomeMusica" placeholder="Nome da música" size="30">
+      <label>Cantor/Banda:</label>
+      <input type="text" id="cantor" placeholder="Nome do cantor ou banda" size="30">
+      <label>Festividade:</label>
+      <input type="checkbox" id="festividade">
+      <button onclick="gerarBlocos()">Formatar Blocos</button>
+    </header>
+
+    <div class="entrada">
+      <h2>Entrada</h2>
+      <textarea id="letraOriginal" placeholder="Cole a letra aqui..."></textarea>
+    </div>
+
+    <div class="editor" id="editor">
+      <h2>Editor</h2>
+    </div>
+
+    <div class="copiar">
+      <button onclick="gerarSaida()">Gerar JSON</button>
+      <h3>Resultado</h3>
+      <div class="saida" id="saidaFormatada"></div>
+    </div>
+  </div>
+
+  <script>
+    function gerarBlocos() {
+      const texto = document.getElementById("letraOriginal").value.trim();
+      const blocosTexto = texto.split(/\n\s*\n/);
+
+      const editor = document.getElementById("editor");
+      editor.innerHTML = "<h2>Editor</h2>";
+
+      blocosTexto.forEach((blocoTexto, index) => {
+        const container = criarContainerDeBloco(index + 1);
+        editor.appendChild(container.div);
+
+        const linhas = blocoTexto.split("\n").filter(l => l.trim() !== "");
+
+        linhas.forEach(linha => {
+          const linhaDiv = document.createElement("div");
+          linhaDiv.className = "linha";
+
+          const marcador = document.createElement("input");
+          marcador.placeholder = "F, M...";
+          marcador.size = 10;
+
+          const textoInput = document.createElement("input");
+          textoInput.value = linha.trim();
+          textoInput.size = 70;
+
+          linhaDiv.appendChild(marcador);
+          linhaDiv.appendChild(textoInput);
+          container.div.appendChild(linhaDiv);
+
+          container.linhas.push({ marcador, textoInput });
+        });
+      });
+    }
+
+    function criarContainerDeBloco(num) {
+      const div = document.createElement("div");
+      div.className = "bloco";
+
+      const legenda = document.createElement("strong");
+      legenda.textContent = `Bloco ${num}: `;
+      div.appendChild(legenda);
+
+      const tiposInput = document.createElement("input");
+      tiposInput.placeholder = "Ex: SOLO, DPTO, IGREJA";
+      tiposInput.size = 40;
+
+      div.appendChild(tiposInput);
+
+      return { div, tiposInput, linhas: [] };
+    }
+
+    function gerarSaida() {
+      const numero = document.getElementById("numero").value.trim();
+      const nome = document.getElementById("nomeMusica").value.trim();
+      const cantor = document.getElementById("cantor").value.trim();
+      const festividade = document.getElementById("festividade").checked;
+
+      const blocos = document.querySelectorAll(".bloco");
+      const partes = [];
+
+      blocos.forEach((bloco, i) => {
+        const tipos = bloco.querySelector("input").value
+          .split(",")
+          .map(x => x.trim().toUpperCase())
+          .filter(x => x);
+
+        const tipoStr = tipos.length > 0 ? `[${tipos.join("+")}]` : "";
+
+        const linhas = bloco.querySelectorAll(".linha");
+        const linhasTexto = [];
+
+        linhas.forEach(linha => {
+          const marcadorRaw = linha.querySelector("input").value;
+          const texto = linha.querySelectorAll("input")[1].value.trim();
+
+          const marcadores = marcadorRaw
+            .split(",")
+            .map(m => m.trim())
+            .filter(m => m)
+            .map(m => `[${m}]`)
+            .join("");
+
+          linhasTexto.push(`${marcadores}${texto}`);
+        });
+
+        partes.push(`[${i + 1}]${tipoStr}@${linhasTexto.join("@")}`);
+      });
+
+      const final = {
+        numero: numero || "XXX",
+        nome: nome,
+        cantor: cantor,
+        letra: partes.join("#"),
+        festividade: festividade
+      };
+
+      document.getElementById("saidaFormatada").textContent = JSON.stringify(final, null, 2);
+    }
+  </script>
+
+</body>
+</html>

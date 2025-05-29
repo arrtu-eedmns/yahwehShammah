@@ -25,6 +25,7 @@ yahwehShammah.pages.push({
         let templateFragment = /*html*/`
             <style>
                 #page-config>#main-color {
+                    display: none;
                     border-radius: 16px;
                     padding: 16px;
                     h1 {font-size:20px;font-weight:900;}
@@ -162,10 +163,11 @@ yahwehShammah.pages.push({
             isDragging = false;
         }
 
-        if(!seth) seth = 240
+        if(!seth) seth = 21
 
         // Exemplo: definir o ângulo inicial para 180 graus ao carregar a página
-        setAngle(yahwehShammah.HUEMainColor.get());
+        // setAngle(yahwehShammah.HUEMainColor.get());
+        setAngle(21);
     },
     tema(id) {
         let templateFragment = /*html*/`

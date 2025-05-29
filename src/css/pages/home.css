@@ -38,6 +38,14 @@
 #popover-letra {
     display: grid;
     overflow-y: scroll;
+
+    #scroll-top-page {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 10;
+    }
+
     &>header {
         display: grid;
         grid-template-columns: auto 1fr auto;
@@ -82,8 +90,11 @@
             .feminino, .m {--h: 0;}
             .masculino, .h {--h: 180;}
             .s, .s {--s: 48%;}
-            &:has(.solo) {&>p {text-decoration: underline;}}
+            /* &:has(.solo) {&>p {text-decoration: underline;}} */
             &:has(.ministracao ) {&>p {font-weight: 900;}}
+
+            &:has(.dpto){--h: 148;}
+            p.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(p.solo)) {text-decoration: underline; --h: 48;}
 
             &>.marcadores {
                 display: grid;
@@ -130,17 +141,6 @@
     }
     &>footer {
         display: grid;
-        grid-template-columns: repeat(3, auto);
-        gap: 16px;
-        padding: 16px;
-        place-content: center;
-        place-items: center;
-        .accent {
-            font-variation-settings:
-            'FILL' 1,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 24
-        }
+        height: 80px;
     }
 }

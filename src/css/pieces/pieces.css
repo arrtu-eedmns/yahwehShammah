@@ -26,7 +26,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-    --main-color: 248;
+    --main-color: 21;
     --h: var(--main-color);
     --s: 40%;
     --l: 0%;

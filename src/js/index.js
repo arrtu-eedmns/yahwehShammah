@@ -5,7 +5,8 @@ if(localStorage.yahwehShammah) {
 }
 
 //Define o Hue
-document.querySelector("html").style.setProperty('--main-color', yahwehShammah.HUEMainColor.get())
+// document.querySelector("html").style.setProperty('--main-color', yahwehShammah.HUEMainColor.get())
+document.querySelector("html").style.setProperty('--main-color', 21)
 //Define o paleta
 document.body.classList.add(yahwehShammah.paleta.get())
 //define font size

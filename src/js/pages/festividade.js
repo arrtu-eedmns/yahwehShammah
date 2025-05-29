@@ -1,6 +1,6 @@
 yahwehShammah.pages.push({
-    name: 'Letras',
-    icon: 'genres',
+    name: 'Festividade',
+    icon: 'cake_add',
     showInNavigation: true,
     main() {
         //m-header
@@ -39,7 +39,7 @@ yahwehShammah.pages.push({
 
         //fragmento das letras
         const fragment = document.createDocumentFragment()
-        db.forEach(({nome, numero}) => {
+        db.filter(({festividade})=>festividade).forEach(({nome, numero}) => {
             let card = `
                 <button 
                     popovertarget="popover-modal"
