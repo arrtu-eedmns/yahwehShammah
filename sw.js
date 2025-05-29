@@ -1,8 +1,6 @@
 const CACHE_NAME = "V2";
 const STATIC_CACHE_URLS = [
-    "/yahwehShammah/",
-    "/yahwehShammah/styles.css",
-    "/yahwehShammah/scripts.js"
+    "/yahwehShammah/"
 ];
 
 self.addEventListener("install", event => {
