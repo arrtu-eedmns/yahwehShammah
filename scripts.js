@@ -33,6 +33,7 @@ window.addEventListener("beforeinstallprompt", e => {
 	deferredPrompt = e;
 	// Show the install button
 	installButton.style.display = "grid";
+	installButton.classList.remove("none");
 	installButton.addEventListener("click", installApp);
 });
 
@@ -46,7 +47,7 @@ function installApp() {
 		if (choiceResult.outcome === "accepted") {
 			console.log("PWA setup accepted");
 			installButton.style.display = "none";
-			installButton.classList.remove("none");
+			installButton.classList.add("none");
 		} else {
 			console.log("PWA setup rejected");
 		}
