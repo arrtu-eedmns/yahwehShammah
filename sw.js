@@ -1,5 +1,9 @@
 const CACHE_NAME = "V2";
-const STATIC_CACHE_URLS = ["/", "styles.css", "scripts.js"];
+const STATIC_CACHE_URLS = [
+    "/yahwehShammah/",
+    "/yahwehShammah/styles.css",
+    "/yahwehShammah/scripts.js"
+];
 
 self.addEventListener("install", event => {
     console.log("Service Worker installing.");
