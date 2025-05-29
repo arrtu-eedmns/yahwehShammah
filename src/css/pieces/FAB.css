@@ -27,4 +27,12 @@
         border-radius: 28px;
         .piece-icon {font-size: 36px;}
     }
+    &.extended {
+        width: auto;
+        grid-template-columns: auto 1fr;
+        padding: 0 8px;
+        gap: 8px;
+        place-items: center;
+        font-weight: 500;
+    }
 }
