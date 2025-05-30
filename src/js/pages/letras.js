@@ -223,10 +223,10 @@ for (let i = 0; i < versos.length; i++) {
                     }
                 }
 
-                trechos.push(`<p class="piece-surface background-color-088 ${classes.join(" ")}"><span>${texto}</span></p>`);
+                trechos.push(`<p class="piece-surface background-color-088 background-color-080-hover ${classes.join(" ")}"><span>${texto}</span></p>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<p class="piece-surface background-color-088"><span>${parte.trim()}</span></p>`);
+            trechos.push(`<p class="piece-surface background-color-088 background-color-080-hover"><span>${parte.trim()}</span></p>`);
         }
     }
 
