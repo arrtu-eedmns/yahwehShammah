@@ -93,7 +93,7 @@
             .masculino, .h {--h: 180;}
             .s, .s {--s: 48%;}
             /* &:has(.solo) {&>p {text-decoration: underline;}} */
-            &:has(.ministracao ) {&>p {font-weight: 900;}}
+            &:has(.ministracao ) {&>label {font-weight: 900;}}
 
             &:has(.dpto){--h: 148;}
             label.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(label.solo)) {text-decoration: underline; --h: 48;}
