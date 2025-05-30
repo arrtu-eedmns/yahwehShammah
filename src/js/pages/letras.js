@@ -223,10 +223,10 @@ for (let i = 0; i < versos.length; i++) {
                     }
                 }
 
-                trechos.push(`<p class="piece-surface background-color-088 background-color-080-hover ${classes.join(" ")}"><span>${texto}</span></p>`);
+                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<p class="piece-surface background-color-088 background-color-080-hover"><span>${parte.trim()}</span></p>`);
+            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
         }
     }
 

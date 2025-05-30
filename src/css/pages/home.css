@@ -86,6 +86,8 @@
             font-size: 16px;
             font-size: 32px;
 
+            input {display: none;}
+
             &:has(.solo) {--h: 48;}
             .feminino, .m {--h: 0;}
             .masculino, .h {--h: 180;}
@@ -94,7 +96,7 @@
             &:has(.ministracao ) {&>p {font-weight: 900;}}
 
             &:has(.dpto){--h: 148;}
-            p.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(p.solo)) {text-decoration: underline; --h: 48;}
+            label.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(label.solo)) {text-decoration: underline; --h: 48;}
 
             &>.marcadores {
                 display: grid;
@@ -127,7 +129,7 @@
                 }
             }
 
-            &>p{
+            &>label{
                 font-size: calc(16px + ((var(--font-size) - 1) * 4px));
                 border-radius: 8px;     
                 padding: 16px;
