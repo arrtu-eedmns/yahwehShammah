@@ -108,3 +108,25 @@ function atualizarPWA() {
 		}, 1000);
 	}
 }
+
+
+// ********* Desregistrar e forçar limpeza e reload *************
+
+function forceUpdatePWA() {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.getRegistrations().then(registrations => {
+			registrations.forEach(registration => {
+				registration.unregister().then(success => {
+					if (success) {
+						console.log("Service Worker desregistrado com sucesso.");
+					} else {
+						console.warn("Falha ao desregistrar o Service Worker.");
+					}
+				});
+			});
+		}).finally(() => {
+			// Recarrega a página para forçar novo download e registro limpo do SW
+			window.location.reload(true);
+		});
+	}
+}
