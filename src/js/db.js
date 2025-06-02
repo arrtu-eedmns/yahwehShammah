@@ -47,12 +47,12 @@ const db = [
         "letra": "[1][DPTO]@Lembro quando Te encontrei@Tudo novo, Você fez@Os abraços que senti@Me fizeram prosseguir#[2][DPTO]@Várias vezes eu caí@E você me levantou@Eu achava estar bem@Mas me rendo#[3][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[4][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[5][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença#[6][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença#[7][DPTO]@Lembro quando Te encontrei@Tudo novo, Você fez@Os abraços que senti@Me fizeram prosseguir#[8][DPTO]@Várias vezes eu caí@E você me levantou@Eu achava estar bem@Mas me rendo#[9][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[10][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[11][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença#[12][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença#[13][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[14][DPTO]@Eu me rendo@Eu me rendo@Eu me rendo a Ti#[15][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença#[16][DPTO]@Toca em mim de novo@Enche-me de novo@Eu não me vejo@Sem Tua presença",
         "festividade": false
     },
-{
-  "numero": "7",
-  "nome": "Não Mais Escravos",
-  "cantor": "Julia Vitória",
-  "letra": "[1][SOLO]@Com uma melodia, Ele me encontrou@Me cercou com uma canção@Que me libertou dos meus inimigos@Dos meus medos me salvou#[2][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[3][DPTO]@Antes de nascer, escolhido fui@Por meu nome, me chamou@De novo, nasci em sua família@O seu sangue me comprou#[4][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[5][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[6][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[7][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[8][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[9][DPTO]@Eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus",
-  "festividade": false
-}
+    {
+        "numero": "7",
+        "nome": "Não Mais Escravos",
+        "cantor": "Julia Vitória",
+        "letra": "[1][SOLO]@Com uma melodia, Ele me encontrou@Me cercou com uma canção@Que me libertou dos meus inimigos@Dos meus medos me salvou#[2][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[3][DPTO]@Antes de nascer, escolhido fui@Por meu nome, me chamou@De novo, nasci em sua família@O seu sangue me comprou#[4][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[5][DPTO]@E eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus#[6][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[7][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[8][DPTO]@Abriu o mar pra eu passar por ele@Perfeito amor que me alcançou@Me resgatou e agora eu posso cantar@Eu sou filho de Deus#[9][DPTO]@Eu não sou mais escravo do medo@Eu sou filho de Deus@E eu não sou mais escravo do medo@Eu sou filho de Deus",
+        "festividade": true
+    }
     
 ]
