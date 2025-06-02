@@ -8,7 +8,8 @@ yahwehShammah.pages.push({
         //m-main
         const mMain = document.querySelector(`#m-main`)
         mMain.innerHTML = `
-            <section id="page-config" class="piece-surface"></section>
+            <section id="page-config" class="piece-surface"><button onclick="atualizarPWA()">Atualizar App</button>
+</section>
         `
 
         const mAside = document.querySelector(`#m-aside`)

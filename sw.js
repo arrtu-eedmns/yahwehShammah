@@ -27,6 +27,14 @@ self.addEventListener("activate", event => {
     );
 });
 
+// 💡 Novo: Ouve mensagem do app para ativar nova versão imediatamente
+self.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "SKIP_WAITING") {
+        console.log("Recebido comando SKIP_WAITING — ativando nova versão...");
+        self.skipWaiting();
+    }
+});
+
 function cache(request, response) {
     if (response.type === "error" || response.type === "opaque") {
         return Promise.resolve(); // Não armazena erros de rede

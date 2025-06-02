@@ -84,3 +84,27 @@ function registerBackgroundSync() {
 		.then(() => console.log("Registered background sync"))
 		.catch(err => console.error("Error registering background sync", err));
 }
+
+
+// ********* Atualizar PWA Manualmente *************
+
+function atualizarPWA() {
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.getRegistration().then(registration => {
+			if (registration) {
+				// Força o SW a buscar nova versão do arquivo sw.js
+				registration.update().then(() => {
+					if (registration.waiting) {
+						console.log("Nova versão do Service Worker pronta. Ativando...");
+						registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+					}
+				});
+			}
+		});
+
+		// Aguarda 1s e recarrega a página para aplicar nova versão
+		setTimeout(() => {
+			window.location.reload(true);
+		}, 1000);
+	}
+}
