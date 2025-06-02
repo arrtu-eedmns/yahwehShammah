@@ -1,6 +1,6 @@
 #page-home {
     display: grid;
-    overflow: hidden;
+    overflow-y: scroll;
     gap: 1px;
     .card-list {
         display: grid;
