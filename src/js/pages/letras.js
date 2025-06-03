@@ -110,7 +110,7 @@ yahwehShammah.pages.push({
                         <span class="piece-ripple"></span>
                     </button>
                 </header>
-                <main></main>
+                <main class="tertiary"></main>
                 <footer></footer>
                 <button id="scroll-top-page" class="piece-FAB piece-surface background-color-052 text-color-to-000 s-40">
                     <span class="material-symbols-rounded piece-icon" translate="no">arrow_upward</span>
@@ -227,10 +227,10 @@ for (let i = 0; i < versos.length; i++) {
                     }
                 }
 
-                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
         }
     }
 

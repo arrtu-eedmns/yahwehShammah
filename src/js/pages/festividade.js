@@ -218,19 +218,19 @@ for (let i = 0; i < versos.length; i++) {
                         .toLowerCase()
                         .replace(/\s+/g, "-");
 
-                    if (valorUpper === "M") {
+                    if (valorUpper === "F") {
                         classes.push("feminino s-40");
-                    } else if (valorUpper === "F") {
+                    } else if (valorUpper === "M") {
                         classes.push("masculino s-40");
                     } else {
                         classes.push(valorNormalizado);
                     }
                 }
 
-                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
         }
     }
 
