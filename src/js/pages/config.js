@@ -8,7 +8,18 @@ yahwehShammah.pages.push({
         //m-main
         const mMain = document.querySelector(`#m-main`)
         mMain.innerHTML = `
-            <section id="page-config" class="piece-surface"><button onclick="carregarLetrasNoLocalStorage()">Atualizar App</button>
+            <section id="page-config" class="piece-surface">
+                <button onclick="carregarLetrasNoLocalStorage()" class="
+                    piece-button
+                    piece-surface
+                    s-40
+                    background-color-056
+                    text-color-100
+                    background-color-044-hover
+                ">  
+                    <span class="material-symbols-rounded piece-icon" translate="no">sync</span>
+                    <span class="piece-label">Atualizar App</span>
+                </button>
 </section>
         `
 
@@ -279,6 +290,7 @@ yahwehShammah.pages.push({
                 #page-config {
                     #paletas {
                         display: grid;
+                        display: none;
                         gap: 16px;
                         border-radius: 16px;
                         padding: 16px;
