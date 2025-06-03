@@ -2,6 +2,7 @@ yahwehShammah.pages.push({
     name: 'Início',
     icon: 'home',
     showInNavigation: false,
+    db: [],
     main() {
         //m-header
         document.querySelector('#m-header #titulo h2').innerText = this.name
@@ -39,7 +40,7 @@ yahwehShammah.pages.push({
 
         //fragmento das letras
         const fragment = document.createDocumentFragment()
-        db.forEach(({nome, numero}) => {
+        this.db.forEach(({nome, numero}) => {
             let card = `
                 <button 
                     popovertarget="popover-modal"
@@ -81,7 +82,7 @@ yahwehShammah.pages.push({
     showLyric(numero_do_hino) {
 
         //obter dados da musica pelo numero
-        let { nome, numero, letra } = db.filter(f=>f.numero==numero_do_hino)[0]
+        let { nome, numero, letra } = this.db.filter(f=>f.numero==numero_do_hino)[0]
 
         let favorito = yahwehShammah.favoritos.get(+numero).includes(+numero) ? 'accent piece-actived' : ''
 

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<title>CRUD - Letras de Músicas</title>
+	<script type="module">
+		// Import Firebase
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+		import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+		const firebaseConfig = {
+			apiKey: "AIzaSyB2Gkim-k9GNZk02t414bZcPSO-z7QlzDE",
+			authDomain: "yahweh-shammah-74033.firebaseapp.com",
+			projectId: "yahweh-shammah-74033",
+			storageBucket: "yahweh-shammah-74033.appspot.com",
+			messagingSenderId: "1090658649746",
+			appId: "1:1090658649746:web:927ffb00842f52d7d2084b"
+		};
+
+		const app = initializeApp(firebaseConfig);
+		const db = getFirestore(app);
+		const letrasRef = collection(db, "letras");
+
+		async function listarLetras() {
+			const querySnapshot = await getDocs(letrasRef);
+			const lista = document.getElementById("lista");
+			lista.innerHTML = "";
+			querySnapshot.forEach(doc => {
+				const data = doc.data();
+				const item = document.createElement("li");
+				item.innerHTML = `
+					<strong>${data.nome}</strong> - ${data.cantor}
+					<button onclick="editar('${doc.id}', '${data.nome}', '${data.cantor}', \`${data.letra}\`, ${data.festividade})">Editar</button>
+					<button onclick="excluir('${doc.id}')">Excluir</button>
+				`;
+				lista.appendChild(item);
+			});
+		}
+
+		async function salvar() {
+			const nome = document.getElementById("nome").value.trim();
+			const cantor = document.getElementById("cantor").value.trim();
+			const letra = document.getElementById("letra").value.trim();
+			const festividade = document.getElementById("festividade").checked;
+
+			if (!nome || !cantor || !letra) return alert("Preencha todos os campos.");
+
+			// Verificar duplicata
+			const q = query(letrasRef, where("nome", "==", nome), where("cantor", "==", cantor));
+			const snap = await getDocs(q);
+
+			if (!snap.empty) {
+				if (!confirm("Já existe uma letra com este nome e cantor. Deseja criar mesmo assim?")) return;
+			}
+
+			await addDoc(letrasRef, { nome, cantor, letra, festividade });
+			alert("Letra adicionada.");
+			listarLetras();
+			limparFormulario();
+		}
+
+		window.editar = (id, nome, cantor, letra, festividade) => {
+			document.getElementById("id").value = id;
+			document.getElementById("nome").value = nome;
+			document.getElementById("cantor").value = cantor;
+			document.getElementById("letra").value = letra;
+			document.getElementById("festividade").checked = festividade;
+			document.getElementById("salvar").style.display = "none";
+			document.getElementById("atualizar").style.display = "inline";
+		};
+
+		async function atualizar() {
+			const id = document.getElementById("id").value;
+			const docRef = doc(db, "letras", id);
+
+			const nome = document.getElementById("nome").value.trim();
+			const cantor = document.getElementById("cantor").value.trim();
+			const letra = document.getElementById("letra").value.trim();
+			const festividade = document.getElementById("festividade").checked;
+
+			await updateDoc(docRef, { nome, cantor, letra, festividade });
+			alert("Letra atualizada.");
+			listarLetras();
+			limparFormulario();
+		}
+
+		window.excluir = async (id) => {
+			if (confirm("Deseja realmente excluir esta letra?")) {
+				await deleteDoc(doc(db, "letras", id));
+				alert("Letra excluída.");
+				listarLetras();
+			}
+		};
+
+		function limparFormulario() {
+			document.getElementById("id").value = "";
+			document.getElementById("nome").value = "";
+			document.getElementById("cantor").value = "";
+			document.getElementById("letra").value = "";
+			document.getElementById("festividade").checked = false;
+			document.getElementById("salvar").style.display = "inline";
+			document.getElementById("atualizar").style.display = "none";
+		}
+
+		window.onload = listarLetras;
+		window.salvar = salvar;
+		window.atualizar = atualizar;
+	</script>
+</head>
+<body>
+	<h1>Cadastro de Letras</h1>
+
+	<input type="hidden" id="id">
+	<input type="text" id="nome" placeholder="Nome da música"><br>
+	<input type="text" id="cantor" placeholder="Cantor"><br>
+	<textarea id="letra" placeholder="Letra da música"></textarea><br>
+	<label><input type="checkbox" id="festividade"> Festividade</label><br>
+
+	<button id="salvar" onclick="salvar()">Salvar</button>
+	<button id="atualizar" onclick="atualizar()" style="display:none;">Atualizar</button>
+
+	<h2>Letras Cadastradas</h2>
+	<ul id="lista"></ul>
+</body>
+</html>

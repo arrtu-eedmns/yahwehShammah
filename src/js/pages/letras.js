@@ -2,6 +2,7 @@ yahwehShammah.pages.push({
     name: 'Letras',
     icon: 'genres',
     showInNavigation: true,
+    db: [],
     main() {
         //m-header
         document.querySelector('#m-header #titulo h2').innerText = this.name
@@ -11,6 +12,9 @@ yahwehShammah.pages.push({
         mMain.innerHTML = /*html*/`
             <section id="page-home" class="piece-surface background-color-080 piece-ripple-to-accent"></section>
         `
+
+        this.db = JSON.parse(localStorage["letras-db"])
+
         const mAside = document.querySelector(`#m-aside`)
         //inserir m-layout da pagina
         mAside.innerHTML = /*html*/`
@@ -39,7 +43,7 @@ yahwehShammah.pages.push({
 
         //fragmento das letras
         const fragment = document.createDocumentFragment()
-        db.forEach(({nome, numero}) => {
+        this.db.forEach(({nome, numero}) => {
             let card = `
                 <button 
                     popovertarget="popover-modal"
@@ -86,7 +90,7 @@ yahwehShammah.pages.push({
 
 
         //obter dados da musica pelo numero
-        let { nome, numero, letra, cantor } = db.filter(f=>f.numero==numero_do_hino)[0]
+        let { nome, numero, letra, cantor } = this.db.filter(f=>f.numero==numero_do_hino)[0]
 
         // let favorito = .favoritos.get(+numero).includes(+numero) ? 'accent piece-actived' : ''
 
