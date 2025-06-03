@@ -1,3 +1,7 @@
+html * {
+    scroll-behavior: smooth;
+}
+
 .s-16, .s-16-active:has(.piece-controller:checked)  {--s: 16%;}
 .s-40, .s-40-active:has(.piece-controller:checked)  {--s: 40%;}
 

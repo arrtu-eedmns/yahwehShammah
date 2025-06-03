@@ -121,10 +121,7 @@ yahwehShammah.pages.push({
         `
 
         document.querySelector("#scroll-top-page").addEventListener('click', ()=>{
-            document.querySelector('#popover-letra main').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start' // or 'end', 'center', 'nearest'
-            });
+            document.querySelector('#popover-letra').scrollTo(0,0)
         })
 
         document.querySelector('#popover-letra #close').addEventListener('click', ()=>document.querySelector('#m-aside').classList.remove('display-grid'))
