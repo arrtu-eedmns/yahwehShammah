@@ -163,7 +163,7 @@ const fragment = document.createDocumentFragment();
 
 function normalizarClasse(texto) {
     const sinônimos = {
-        "m": "F",
+        "f": "F",
         "h": "M",
         "dpto": "DPTO"
     };

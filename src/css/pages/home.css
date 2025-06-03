@@ -89,9 +89,10 @@
             input {display: none;}
 
             &:has(.solo) {--h: 48;}
-            .feminino, .m, .dpto-mulheres {--h: 300;}
-            .masculino, .h, .dpto-homens {--h: 180;}
+            .feminino, .f, .dpto-mulheres {--h: 300;}
+            .masculino, .m, .dpto-homens {--h: 180;}
             .s, .s {--s: 48%;}
+            .f, .m, .s {aspect-ratio: 1/1;}
             /* &:has(.solo) {&>p {text-decoration: underline;}} */
             &:has(.ministracao ) {&>label {font-weight: 900;}}
 

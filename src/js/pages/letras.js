@@ -163,7 +163,7 @@ const fragment = document.createDocumentFragment();
 
 function normalizarClasse(texto) {
     const sinônimos = {
-        "m": "F",
+        "f": "F",
         "h": "M",
         "dpto": "DPTO"
     };
@@ -218,9 +218,9 @@ for (let i = 0; i < versos.length; i++) {
                         .toLowerCase()
                         .replace(/\s+/g, "-");
 
-                    if (valorUpper === "M") {
+                    if (valorUpper === "F") {
                         classes.push("feminino s-40");
-                    } else if (valorUpper === "F") {
+                    } else if (valorUpper === "M") {
                         classes.push("masculino s-40");
                     } else {
                         classes.push(valorNormalizado);
