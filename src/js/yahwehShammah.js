@@ -2,6 +2,11 @@ const yahwehShammah = {}
 
 yahwehShammah.pages = []
 
+yahwehShammah.letrasDB = {
+    get(){
+        return JSON.parse(localStorage["letras-db"])
+    }
+}
 yahwehShammah.devMode = {
     get(){
         return JSON.parse(localStorage.yahwehShammah).devMode
@@ -96,6 +101,7 @@ function defineLocalStorage(){
     if(LocalStorageYahwehShammah.presentation == null) LocalStorageYahwehShammah.presentation = "null"
     if(LocalStorageYahwehShammah.developerMode == null) LocalStorageYahwehShammah.developerMode = false
     if(LocalStorageYahwehShammah.mainApp == null) LocalStorageYahwehShammah.mainApp = null
+    if(localStorage['letras-db'] == null) localStorage['letras-db'] = null
 
     return JSON.stringify(LocalStorageYahwehShammah)
 }

@@ -355,84 +355,52 @@
                 }
                 });
         </script>
-    <script type="module">
-        // Importa os módulos do Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        <script type="module">
+            // Importa os módulos do Firebase
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+            import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2Gkim-k9GNZk02t414bZcPSO-z7QlzDE",
-            authDomain: "yahweh-shammah-74033.firebaseapp.com",
-            projectId: "yahweh-shammah-74033",
-            storageBucket: "yahweh-shammah-74033.firebasestorage.app",
-            messagingSenderId: "1090658649746",
-            appId: "1:1090658649746:web:927ffb00842f52d7d2084b",
-            measurementId: "G-NTX3KHD3FN"
-        };
+            // Configuração do Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyB2Gkim-k9GNZk02t414bZcPSO-z7QlzDE",
+                authDomain: "yahweh-shammah-74033.firebaseapp.com",
+                projectId: "yahweh-shammah-74033",
+                storageBucket: "yahweh-shammah-74033.firebasestorage.app",
+                messagingSenderId: "1090658649746",
+                appId: "1:1090658649746:web:927ffb00842f52d7d2084b",
+                measurementId: "G-NTX3KHD3FN"
+            };
 
-        // Inicializa Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app); // 🔥 Firestore ativado
+            // Inicializa Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app); // 🔥 Firestore ativado
 
-        // 🔍 Buscar todas as músicas da coleção "musicas"
-        async function buscarMusicas() {
-            try {
-                const musicasCol = collection(db, "letras");
-                const musicasSnap = await getDocs(musicasCol);
-                const musicas = musicasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Torna a função global para o botão poder chamar
+            window.carregarLetrasNoLocalStorage = async function () {
+                const letrasRef = collection(db, "letras");
+                const snapshot = await getDocs(letrasRef);
 
-                console.log("🎵 Músicas encontradas:", musicas);
-                // Aqui você pode renderizar no HTML
-            } catch (err) {
-                console.error("Erro ao buscar músicas:", err);
-            }
-        }
+                const letras = [];
+                let numero = 1;
 
-        // Chama a função
-        // buscarMusicas();
+                snapshot.forEach((doc) => {
+                    const dados = doc.data();
+                    letras.push({ ...dados, numero: numero++ });
+                });
 
-        
+                localStorage.setItem("letras-db", JSON.stringify(letras));
+                console.log("Letras carregadas no LocalStorage.");
+                
+                //chama home
+                document.querySelector('#m-nav .piece-nav-button').click()
 
+            };
 
+            if(!yahwehShammah.letrasDB.get()) carregarLetrasNoLocalStorage()
 
-
-
-
-
-
-
-  // Torna a função global para o botão poder chamar
-  window.carregarLetrasNoLocalStorage = async function () {
-    const letrasRef = collection(db, "letras");
-    const snapshot = await getDocs(letrasRef);
-
-    const letras = [];
-    let numero = 1;
-
-    snapshot.forEach((doc) => {
-      const dados = doc.data();
-      letras.push({ ...dados, numero: numero++ });
-    });
-
-    localStorage.setItem("letras-db", JSON.stringify(letras));
-    console.log("Letras carregadas no LocalStorage.");
-  };
-
-
-        
-
-
-
-
-
-
-
-
-
-    </script>
+        </script>
 
     </body>
 </html>
