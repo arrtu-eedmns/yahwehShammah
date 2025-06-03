@@ -43,7 +43,7 @@ yahwehShammah.pages.push({
 
         //fragmento das letras
         const fragment = document.createDocumentFragment()
-        this.db.filter(({festividade})=>festividade).forEach(({nome, numero}) => {
+        this.db.filter(({festividade})=>festividade).forEach(({nome, numero, cantor}) => {
             let card = `
                 <button 
                     popovertarget="popover-modal"
@@ -63,6 +63,7 @@ yahwehShammah.pages.push({
                 >
                     <span class="numero piece-surface background-color-088 text-color-012 tertiary s-40">${numero}</span>
                     <span class="nome">${nome}</span>
+                    <span class="cantor">${cantor}</span>
                     <span class="piece-ripple"></span>
                 </button>
             `
