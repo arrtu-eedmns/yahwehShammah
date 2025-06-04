@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizador de Impressão</title>
+    <style>
+        :root {
+            --fonte-titulo: 16;
+            --fonte-verso: 12;
+            --colunas: 1;
+            --repeticoes: 1;
+            --espaco-colunas: 5mm;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .controles {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-right: 1px solid #ccc;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .controles label {
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .controles input[type=range],
+        .controles input[type=number] {
+            width: 100%;
+        }
+
+        .controles span.valor {
+            font-weight: normal;
+            font-size: 13px;
+        }
+
+        .controles button {
+            padding: 10px;
+            font-weight: bold;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .preview {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .pagina {
+            background: white;
+            width: 210mm;
+            height: 297mm;
+            margin: auto;
+            padding: 0.5mm;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10mm;
+            page-break-after: always;
+        }
+
+        .paisagem .pagina {
+            width: 297mm;
+            height: 210mm;
+        }
+
+        .copia {
+            flex: 1;
+            column-count: var(--colunas);
+            column-gap: var(--espaco-colunas);
+        }
+
+        .bloco {
+            margin-bottom: 12px;
+            break-inside: avoid;
+        }
+
+        .bloco h3 {
+            font-size: calc(var(--fonte-titulo) * 1px);
+            margin: 0px;
+        }
+
+        .bloco p {
+            font-size: calc(var(--fonte-verso) * 1px);
+            margin: 0;
+        }
+
+        .solo p {
+            text-decoration: underline;
+        }
+
+        i {
+            flex: 1 1 100%;
+            /* background: pink; */
+            column-span: all;
+            display: block;
+            width: 100%;
+            margin-bottom: 16px;
+            font-weight: bolder;
+            font-size: 14px;
+        }
+
+        @page {
+  margin: 5mm;
+}
+
+        @media print {
+
+            
+
+            body,
+            .preview {
+                margin: 0;
+                padding: 0;
+                overflow: visible;
+            }
+
+            .controles {
+                display: none;
+            }
+
+            .pagina {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controles">
+        <label>
+            Tamanho Título:
+            <input type="range" min="10" max="32" value="16" id="titulo">
+            <span class="valor" id="valTitulo">16px</span>
+        </label>
+        <label>
+            Tamanho Verso:
+            <input type="range" min="8" max="24" value="12" id="verso">
+            <span class="valor" id="valVerso">12px</span>
+        </label>
+        <label>
+            Colunas:
+            <input type="number" min="1" max="6" value="1" id="colunas">
+        </label>
+        <label>
+            Repetições por página:
+            <input type="number" min="1" max="8" value="1" id="repeticoes">
+        </label>
+        <label>
+            Modo:
+            <select id="orientacao">
+                <option value="">Retrato</option>
+                <option value="paisagem">Paisagem</option>
+            </select>
+        </label>
+        <button onclick="window.print()">🖨️ Imprimir</button>
+    </div>
+
+    <div class="preview" id="preview"></div>
+
+    <script>
+        const nome = `Ele Vem`
+        const cantor = `Gabriel Guedes`
+        const letra = `[1][SOLO MASCULINO]@Eu não vou me apegar com as coisas daqui@Pois eu sei, há um lugar que me espera@Estrangeiro eu sou, o meu lar é o céu@Meu Jesus vem buscar a Sua Noiva#[2][DPTO]@Ele virá num piscar de olhar@Quem estiver pronto com Ele irá@Na Sua Glória com Ele morar@Ele vem, Ele vem#[3][DPTO]@Não mais tristeza, não mais temor@Junto com os anjos cantar eu vou@Digno é o cordeiro que Se entregou@Ele vem, Ele vem#[4][SOLO FEMININO]@Eu não vou me apegar com as coisas daqui@Pois eu sei, há um lugar que me espera@Estrangeiro eu sou, o meu lar é o céu@Meu Jesus vem buscar a Sua Noiva#[5][DPTO]@Ele virá num piscar de olhar@Quem estiver pronto com Ele irá@Na Sua Glória com Ele morar@Ele vem, Ele vem#[6][DPTO]@Não mais tristeza, não mais temor@Junto com os anjos cantar eu vou@Digno é o cordeiro que Se entregou@Ele vem, Ele vem#[7][SOLO FEMININO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[8][SOLO FEMININO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[9][DPTO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[10][DPTO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[11][DPTO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[12][DPTO]@Ele virá num piscar de olhar@Quem estiver pronto com Ele irá@Na Sua Glória com Ele morar@Ele vem, Ele vem#[13][DPTO]@Não mais tristeza, não mais temor@Junto com os anjos cantar eu vou@Digno é o cordeiro que Se entregou@Ele vem, Ele vem (Tu és Senhor)#[14][DPTO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar (receba tudo)@Então vem, então vem (receba tudo)#[15][DPTO]@Tu és Senhor, o nosso Deus@Digno Tu és de receber@Todo louvor, vamos clamar@Então vem, então vem#[16][DPTO HOMENS]@O Rei está voltando, o Rei está voltando@A trombeta está soando, o meu nome irá chamar@Sim, o Rei está voltando, o Rei está voltando!@Aleluia, Ele vem me buscar!#[17][DPTO MULHERES]@O Rei está voltando, o Rei está voltando@A trombeta está soando, o meu nome irá chamar@O Rei está voltando, o Rei está voltando!@Aleluia, Ele vem me buscar!#[18][DPTO TODOS]@O Rei está voltando, o Rei está voltando@A trombeta está soando, o meu nome irá chamar@Sim, o Rei está voltando, o Rei está voltando!@Aleluia, Ele vem me buscar!`
+
+        const container = document.getElementById('preview');
+
+        function renderizar() {
+            const titulo = document.getElementById('titulo').value;
+            const verso = document.getElementById('verso').value;
+            const colunas = document.getElementById('colunas').value;
+            const repeticoes = document.getElementById('repeticoes').value;
+            const orientacao = document.getElementById('orientacao').value;
+
+            document.documentElement.style.setProperty('--fonte-titulo', titulo);
+            document.documentElement.style.setProperty('--fonte-verso', verso);
+            document.documentElement.style.setProperty('--colunas', colunas);
+            document.documentElement.style.setProperty('--repeticoes', repeticoes);
+
+            document.getElementById('valTitulo').textContent = `${titulo}px`;
+            document.getElementById('valVerso').textContent = `${verso}px`;
+
+            document.body.classList.toggle('paisagem', orientacao === 'paisagem');
+
+            container.innerHTML = '';
+
+            const blocos = letra.split('#').map(item => {
+                const [cabecalho, ...versos] = item.trim().split('@');
+                const tipo = cabecalho.includes('SOLO') ? 'solo' : 'dpto';
+                return `
+          <div class="bloco ${tipo.toLowerCase()}">
+            <h3>${cabecalho}</h3>
+            ${versos.map(v => `<p>${v}</p>`).join('')}
+          </div>`;
+            });
+
+            const pagina = document.createElement('div');
+            pagina.className = 'pagina';
+
+            for (let i = 0; i < repeticoes; i++) {
+                const copia = document.createElement('div');
+                copia.className = 'copia';
+                copia.innerHTML = `<i>${nome} - ${cantor}</i>`+blocos.join('');
+                pagina.appendChild(copia);
+            }
+
+            container.appendChild(pagina);
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', renderizar);
+        });
+
+        renderizar();
+    </script>
+</body>
+
+</html>
