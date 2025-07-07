@@ -1,3 +1,5 @@
+/* * {box-shadow: 0 0 0 1px red;} */
+
 html * {
     scroll-behavior: smooth;
 }
@@ -155,7 +157,7 @@ body {
 
     #m-divider-h {grid-area: m-divider-h;}
 
-    #m-nav {
+    #m-nav- {
         display: grid;
         grid-area: m-nav;
         grid-auto-flow: row;
@@ -192,7 +194,7 @@ body {
 @media screen and (max-width: 768px){
 
     body {
-        grid-template-rows: 80px 1px 1fr 1px 80px;
+        grid-template-rows: 80px 1px 1fr 1px auto;
         grid-template-columns: unset;
         grid-template-areas:
             'm-header'
@@ -242,7 +244,7 @@ body {
         #m-divider-v-2 {display: none;}
         #m-aside {display: none;z-index: 101; overflow-y: hidden;}
 
-        #m-nav {
+        #m-nav- {
             height: 80px;
             grid-auto-flow: column;
 

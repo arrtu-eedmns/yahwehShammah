@@ -57,7 +57,7 @@
 
     &>header {
         display: grid;
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns: auto 1fr 40px;
         gap: 16px;
         padding: 16px;
         align-items: center;
@@ -97,24 +97,23 @@
 
             input {display: none;}
 
-            &:has(.dpto) {--h: 261;}
-            &:has(.solo) {--h: 48;}
-            &:has(.dpto-masculino, .dpto-homens) {--h: 180;}
-            &:has(.dpto-feminino, .dpto-mulheres) {--h: 300;}
-            .feminino, .f, .dpto-mulheres {--h: 300;}
-            .masculino, .m, .dpto-homens {--h: 180;}
-            .s, .s {--s: 48%;}
+            &:has(.dpto) {--piece-h: 261;}
+            &:has(.dpto-masculino, .dpto-homens) {--piece-h: 180;}
+            &:has(.dpto-feminino, .dpto-mulheres) {--piece-h: 300;}
+            .feminino, .f, .dpto-mulheres {--piece-h: 300;}
+            .masculino, .m, .dpto-homens {--piece-h: 180;}
+            .s, .s {--piece-s: 48%;}
             .f, .m, .s {aspect-ratio: 1/1;}
             /* &:has(.solo) {&>p {text-decoration: underline;}} */
             &:has(.ministracao) {
-                --h: 100;
+                --piece-h: 100;
 
                 &>label {font-weight: 900; }
             }
 
-            label.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(label.solo)) {text-decoration: underline; --h: 48;}
-            label.solo-masculino, .marcadores .solo-masculino, &:has(.marcadores .solo-masculino):not(:has(label.solo-masculino)) {text-decoration: underline; --h: 180;}
-            label.solo-feminino, .marcadores .solo-feminino, &:has(.marcadores .solo-feminino):not(:has(label.solo-feminino)) {text-decoration: underline; --h: 300;}
+            label.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(label.solo)) {text-decoration: underline; --piece-h: 48;}
+            label.solo-masculino, .marcadores .solo-masculino, &:has(.marcadores .solo-masculino):not(:has(label.solo-masculino)) {text-decoration: underline; --piece-h: 180;}
+            label.solo-feminino, .marcadores .solo-feminino, &:has(.marcadores .solo-feminino):not(:has(label.solo-feminino)) {text-decoration: underline; --piece-h: 300;}
 
             &>.marcadores {
                 display: grid;
@@ -138,6 +137,7 @@
                     font-weight: 900;
                 }
                 &>span {
+                    --piece-s: 48%;
                     font-size: 16px;
                     display: grid;
                     place-items: center;
@@ -148,14 +148,12 @@
             }
 
             &>label{
+                --piece-s: 48%;
                 font-size: calc(16px + ((var(--font-size) - 1) * 4px));
                 border-radius: 8px;     
                 padding: 16px;
                 &:first-of-type {border-radius: 32px 32px 8px 8px;}
                 &:last-of-type {border-radius: 8px 8px  32px 32px;}
-            }
-            &>* {
-                /* pointer-events: none; */
             }
         }
     }

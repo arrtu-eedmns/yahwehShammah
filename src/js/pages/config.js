@@ -12,15 +12,15 @@ yahwehShammah.pages.push({
                 <button onclick="carregarLetrasNoLocalStorage()" class="
                     piece-button
                     piece-surface
-                    s-40
-                    background-color-056
-                    text-color-100
-                    background-color-044-hover
+                    piece-s-40
+                    background-color-auto-13
+                    text-color-auto-00
+                    background-color-15-hover
                 ">  
                     <span class="material-symbols-rounded piece-icon" translate="no">sync</span>
                     <span class="piece-label">Atualizar App</span>
                 </button>
-</section>
+            </section>
         `
 
         const mAside = document.querySelector(`#m-aside`)
@@ -29,7 +29,7 @@ yahwehShammah.pages.push({
 
         this.hslslider("#page-config")
         this.tema("#page-config")
-        this.paletas("#page-config")
+        // this.paletas("#page-config")
         this.font_size("#page-config")
     },
     hslslider(id, seth){
@@ -230,40 +230,40 @@ yahwehShammah.pages.push({
                     }
                 }
             </style>
-            <div id="tema" class="piece-surface background-color-088 text-color-012">
+            <div id="tema" class="piece-surface background-color-auto-03 text-color-auto-22">
                 <h1>Tema</h1>
                 <label id="tgg-mm" class="
                     piece-surface
 
-                    background-color-080
-                    background-color-076-hover
+                    background-color-auto-05
+                    background-color-auto-06-hover
                     
                     ripple-color-048
                 ">
-                    <span class="piece-ripple"></span>
+                    <!-- <span class="piece-ripple"></span> -->
                     <input type="checkbox" name="tema" class="piece-controller">
                     <!-- <span class="piece-surface surface-parent background-color-bg active-indicator"></span> -->
                     <span class="
                         piece-surface
                         surface-parent
                         label
-                        background-color-096
-                        background-color-080-active
-                        background-color-092-hover
-                        background-color-076-hover-active
-                        text-color-048
-                        text-color-024-active
+                        background-color-auto-01
+                        background-color-auto-05-active
+                        background-color-auto-02-hover
+                        background-color-auto-06-hover-active
+                        text-color-auto-12
+                        text-color-auto-06-active
                     ">Claro</span>
                     <span class="
                         piece-surface
                         surface-parent
                         label
-                        background-color-080
-                        background-color-096-active
-                        background-color-076-hover
-                        background-color-092-hover-active
-                        text-color-024
-                        text-color-048-active
+                        background-color-auto-01-active
+                        background-color-auto-05
+                        background-color-auto-06-hover
+                        background-color-auto-02-hover-active
+                        text-color-auto-06-active
+                        text-color-auto-12
                     ">Escuro</span>
                 </label>
             </div>
@@ -273,13 +273,13 @@ yahwehShammah.pages.push({
         if(yahwehShammah.darkMode.get()) tema.setAttribute('checked', true)
             document.querySelector("#page-config #tema input").addEventListener('click', (e)=>{
             let body = document.body
-            let isDark = body.classList.contains('dark')
+            let isDark = body.classList.contains('piece-dark')
             if (isDark) {
-                body.classList.remove('dark')
-                body.classList.add('light')
+                body.classList.remove('piece-dark')
+                body.classList.add('piece-light')
             } else {
-                body.classList.remove('light')
-                body.classList.add('dark')
+                body.classList.remove('piece-light')
+                body.classList.add('piece-dark')
             }
             yahwehShammah.darkMode.set()
         })
@@ -368,7 +368,7 @@ yahwehShammah.pages.push({
                     }
                 }
             </style>
-            <section id="paletas" class="piece-surface background-color-088 text-color-012">
+            <section id="paletas" class="piece-surface background-color-auto-03 text-color-auto-22">
                 <h1>Paleta</h1>
                 <div>
                     <label class="analoga option piece-surface ripple-color-048 border-color-064">
@@ -443,7 +443,7 @@ yahwehShammah.pages.push({
                     input {display: none;}
                 }
             </style>
-            <div id="tema" class="piece-surface background-color-088 text-color-012">
+            <div id="tema" class="piece-surface background-color-auto-03 text-color-auto-22">
                 <h1>Tamanho da fonte</h1>
                 <div id="font-size" style="display:flex;" class="piece-segmented-button" class="piece-surface background-color-mg"></div>
             </div>
@@ -455,12 +455,12 @@ yahwehShammah.pages.push({
             const template = `
                 <label class="
                     piece-surface
-                    background-color-088
-                    background-color-084-hover
-                    background-color-048-active
-                    text-color-100-active
-                    background-color-044-hover-active
-                    border-color-080
+                    background-color-auto-03
+                    background-color-auto-04-hover
+                    background-color-auto-12-active
+                    text-color-auto-00-active
+                    background-color-auto-11-hover-active
+                    border-color-auto-05
                     ripple-color-100
                 ">
                     <input class="piece-controller" type="radio" name="font-size" value="${i+1}">

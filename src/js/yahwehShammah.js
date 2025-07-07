@@ -95,7 +95,7 @@ function defineLocalStorage(){
     if(LocalStorageYahwehShammah.apps == null) LocalStorageYahwehShammah.apps = {}
     if(LocalStorageYahwehShammah.dark == null) LocalStorageYahwehShammah.dark = false
     if(LocalStorageYahwehShammah.HUEMainColor == null) LocalStorageYahwehShammah.HUEMainColor = 49
-    if(LocalStorageYahwehShammah.paleta == null) LocalStorageYahwehShammah.paleta = "triade"
+    if(LocalStorageYahwehShammah.paleta == null) LocalStorageYahwehShammah.paleta = "piece-triade"
     if(LocalStorageYahwehShammah.fontSize == null) LocalStorageYahwehShammah.fontSize = 1
     if(LocalStorageYahwehShammah.favoritos == null) LocalStorageYahwehShammah.favoritos = []
     if(LocalStorageYahwehShammah.presentation == null) LocalStorageYahwehShammah.presentation = "null"

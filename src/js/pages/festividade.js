@@ -10,11 +10,11 @@ yahwehShammah.pages.push({
         const mMain = document.querySelector(`#m-main`)
         //inserir m-layout da pagina
         mMain.innerHTML = /*html*/`
-            <section id="page-home" class="piece-surface background-color-080 piece-ripple-to-accent"></section>
+            <section id="page-home" class="piece-surface background-color-auto-04 piece-ripple-to-accent"></section>
         `
 
         this.db = JSON.parse(localStorage["letras-db"])
-        
+
         const mAside = document.querySelector(`#m-aside`)
         //inserir m-layout da pagina
         mAside.innerHTML = /*html*/`
@@ -36,7 +36,7 @@ yahwehShammah.pages.push({
                 }
             </style>
             <div id="empty">
-                <span class="material-symbols-rounded piece-icon piece-surface background-color-080 text-color-to-fg" translate="no">fmd_bad</span>
+                <span class="material-symbols-rounded piece-icon piece-surface background-color-auto-10 text-color-auto-00" translate="no">fmd_bad</span>
                 <span class="label">Nenhuma letra selecionada!</span>
             </div>
         `
@@ -52,16 +52,16 @@ yahwehShammah.pages.push({
                     class="
                         card-list
                         piece-surface
-                        background-color-096
-                        background-color-092-hover
-                        background-color-088-active
-                        background-color-084-hover-active
+                        background-color-auto-00
+                        background-color-auto-01-hover
+                        background-color-auto-088-active
+                        background-color-auto-084-hover-active
                         background-color-secondary-active
                         text-color-secondary-active
-                        ripple-color-048
+                        ripple-color-auto-13
                     "
                 >
-                    <span class="numero piece-surface background-color-088 text-color-012 tertiary s-40">${numero}</span>
+                    <span class="numero piece-surface background-color-auto-05 text-color-auto-20 piece-tertiary piece-s-40">${numero}</span>
                     <span class="nome">${nome}</span>
                     <span class="cantor">${cantor}</span>
                     <span class="piece-ripple"></span>
@@ -101,21 +101,19 @@ yahwehShammah.pages.push({
         mAside.innerHTML = `
             <section id="popover-letra" class="piece-surface">
                 <header>
-                    <span class="numero piece-surface background-color-088 text-color-012 tertiary s-40">${numero}</span>
+                    <span class="numero piece-surface background-color-auto-10 text-color-auto-00 piece-s-40">${numero}</span>
                     <div>
                         <p class="nome">${nome}</p>
                         <p class="cantor">${cantor}</p>
                     </div>
-                    <button id="close" popovertarget="popover-modal" class="s-40 piece-icon-button piece-small piece-surface background-color-088 text-color-to-012 background-color-084-hover secondary ripple-color-048">
+                    <button id="close" popovertarget="popover-modal" class="piece-s-40 piece-icon-button piece-small piece-surface background-color-auto-03 text-color-auto-20 background-color-auto-04-hover piece-secondary">
                         <span class="material-symbols-rounded piece-icon" translate="no">close</span>
-                        <span class="piece-ripple"></span>
                     </button>
                 </header>
-                <main></main>
+                <main class="tertiary"></main>
                 <footer></footer>
-                <button id="scroll-top-page" class="piece-FAB piece-surface background-color-052 text-color-to-000 s-40">
+                <button id="scroll-top-page" class="piece-FAB piece-surface background-color-auto-13 text-color-auto-00 piece-s-40">
                     <span class="material-symbols-rounded piece-icon" translate="no">arrow_upward</span>
-                    <span class="piece-ripple"></span>
                 </button>
             </section>
         `
@@ -217,28 +215,28 @@ for (let i = 0; i < versos.length; i++) {
                         .replace(/\s+/g, "-");
 
                     if (valorUpper === "F") {
-                        classes.push("feminino s-40");
+                        classes.push("feminino piece-40");
                     } else if (valorUpper === "M") {
-                        classes.push("masculino s-40");
+                        classes.push("masculino piece-40");
                     } else {
                         classes.push(valorNormalizado);
                     }
                 }
 
-                trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+                trechos.push(`<label class="piece-surface background-color-auto-03 background-color-auto-05-active piece-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<label class="piece-surface background-color-088 background-color-080-active s-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+            trechos.push(`<label class="piece-surface background-color-auto-03 background-color-auto-05-active piece-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
         }
     }
 
     // Montar a barra de marcadores (única)
-    let marcadorHTML = `<span class="marcadores piece-surface background-color-096">`;
+    let marcadorHTML = `<span class="marcadores piece-surface background-color-auto-00">`;
     for (let index = 0; index < marcadores.length; index++) {
         const marcador = marcadores[index];
         const valorOriginal = marcador.valor;
 
-        const classeBase = "piece-surface background-color-088 text-color-012 s-40";
+        const classeBase = "piece-surface background-color-auto-03 text-color-012 piece-40";
         const classeExtra = valorOriginal
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
