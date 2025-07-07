@@ -22,6 +22,7 @@ yahwehShammah.pages
                 piece-indicator
                 piece-surface
                 background-color-auto-06
+                piece-s-40
             "></span>
             <span class="material-symbols-rounded piece-icon" translate="no">${page.icon}</span>
             <span class="piece-label">${page.name}</span>
