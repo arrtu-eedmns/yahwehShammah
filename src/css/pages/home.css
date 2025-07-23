@@ -103,7 +103,10 @@
 
             /* SOLO */
             &:has(.solo):not(:has(.marcador.dpto)) .marcador,
-            &:has(.solo):not(:has(.marcador.dpto)) label {
+            &:has(.solo):not(:has(.marcador.dpto)) label,
+            .marcador.solo,
+            label.solo
+            {
                 text-decoration: underline;
                 --piece-h: 48;
             }
