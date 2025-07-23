@@ -236,7 +236,7 @@ for (let i = 0; i < versos.length; i++) {
         const marcador = marcadores[index];
         const valorOriginal = marcador.valor;
 
-        const classeBase = "piece-surface background-color-auto-04 text-color-012 piece-40";
+        const classeBase = "piece-surface marcador background-color-auto-04 text-color-012 piece-40";
         const classeExtra = valorOriginal
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
@@ -248,7 +248,7 @@ for (let i = 0; i < versos.length; i++) {
             ? `numero tertiary ${classeBase}`
             : `${classeBase} ${classeExtra}`;
 
-        marcadorHTML += `<span class="${classeFinal}">${normalizarClasse(valorOriginal)}</span>`;
+        marcadorHTML += `<span class="${classeFinal} marcador">${normalizarClasse(valorOriginal)}</span>`;
     }
     marcadorHTML += `</span>`;
 
