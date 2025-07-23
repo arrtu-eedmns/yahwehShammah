@@ -97,23 +97,66 @@
 
             input {display: none;}
 
-            &:has(.dpto) {--piece-h: 261;}
-            &:has(.dpto-masculino, .dpto-homens) {--piece-h: 180;}
-            &:has(.dpto-feminino, .dpto-mulheres) {--piece-h: 300;}
-            .feminino, .f, .dpto-mulheres {--piece-h: 300;}
-            .masculino, .m, .dpto-homens {--piece-h: 180;}
-            .s, .s {--piece-s: 48%;}
-            .f, .m, .s {aspect-ratio: 1/1;}
-            /* &:has(.solo) {&>p {text-decoration: underline;}} */
-            &:has(.ministracao) {
-                --piece-h: 100;
+            /* DPTO */
+            &:has(.dpto, .dpto-todos) .marcador,
+            &:has(.dpto, .dpto-todos) label {--piece-h: 261;}
 
-                &>label {font-weight: 900; }
+            /* SOLO */
+            &:has(.solo):not(:has(.marcador.dpto)) .marcador,
+            &:has(.solo):not(:has(.marcador.dpto)) label {
+                text-decoration: underline;
+                --piece-h: 48;
             }
 
-            label.solo, .marcadores .solo, &:has(.marcadores .solo):not(:has(label.solo)) {text-decoration: underline; --piece-h: 48;}
-            label.solo-masculino, .marcadores .solo-masculino, &:has(.marcadores .solo-masculino):not(:has(label.solo-masculino)) {text-decoration: underline; --piece-h: 180;}
-            label.solo-feminino, .marcadores .solo-feminino, &:has(.marcadores .solo-feminino):not(:has(label.solo-feminino)) {text-decoration: underline; --piece-h: 300;}
+            /* SOLO solo-masculino */
+            &:has(.solo-masculino):not(:has(.marcador.dpto)) .marcador,
+            &:has(.solo-masculino):not(:has(.marcador.dpto)) label {
+                text-decoration: underline;
+                --piece-h: 180;
+            }
+            /* SOLO solo-feminino */
+            &:has(.solo-feminino):not(:has(.marcador.dpto)) .marcador,
+            &:has(.solo-feminino):not(:has(.marcador.dpto)) label {
+                text-decoration: underline;
+                --piece-h: 300;
+            }
+
+            /* ministracao / .declamação */
+            &:has(.ministracao, .declamacao) .marcador,
+            &:has(.ministracao, .declamacao) label {
+                --piece-h: 100;
+                font-weight: 900;
+            }
+
+            .marcador.f, .marcador.m, .marcador.s {aspect-ratio: 1/1;}
+
+            /* .feminino, .f, .dpto-mulheres .marcador {--piece-h: 300;} */
+            /* .masculino, .m, .dpto-homens .marcador {--piece-h: 180;} */
+
+            /* f */
+            &:has(.f,.feminino, .dpto-feminino) .f.marcador,
+            &:has(.f,.feminino, .dpto-feminino) label.feminino {
+                --piece-h: 300;
+            }
+            /* m */
+            &:has(.m,.masculino, .dpto-masculino) .m.marcador,
+            &:has(.m,.masculino, .dpto-masculino) label.masculino {
+                --piece-h: 180;
+            }
+
+            .m .marcador {--piece-h: 180;}
+
+            .s {
+                text-decoration: underline;
+                --piece-s: 48%;
+            }
+
+
+            /* label.solo, */
+            /* .marcador.solo {text-decoration: underline; --piece-h: 48;} */
+
+            /* label.solo-masculino, .marcadores .solo-masculino, &:has(.marcadores .solo-masculino):not(:has(label.solo-masculino)) {text-decoration: underline; --piece-h: 180;} */
+            /* label.solo-feminino, .marcadores .solo-feminino, &:has(.marcadores .solo-feminino):not(:has(label.solo-feminino)) {text-decoration: underline; --piece-h: 300;} */
 
             &>.marcadores {
                 display: grid;
