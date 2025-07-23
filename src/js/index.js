@@ -17,12 +17,20 @@ yahwehShammah.pages
 .filter(page=>page.showInNavigation)
 .forEach((page, i)=>{
     const template = /*html*/`
-        <label class="piece-item piece-surface piece-secondary">
+        <label class="piece-item piece-surface">
             <span class="
                 piece-indicator
                 piece-surface
-                background-color-auto-06
+                piece-parent
                 piece-s-40
+
+                background-color-auto-02
+                background-color-auto-04-hover
+
+                text-color-auto-04-hover
+
+                background-color-auto-11-active
+                background-color-auto-13-hover-active
             "></span>
             <span class="material-symbols-rounded piece-icon" translate="no">${page.icon}</span>
             <span class="piece-label">${page.name}</span>

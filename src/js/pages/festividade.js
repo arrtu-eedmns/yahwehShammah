@@ -52,8 +52,8 @@ yahwehShammah.pages.push({
                     class="
                         card-list
                         piece-surface
-                        background-color-auto-00
-                        background-color-auto-01-hover
+                        background-color-auto-02
+                        background-color-auto-03-hover
                         background-color-auto-088-active
                         background-color-auto-084-hover-active
                         background-color-secondary-active
@@ -223,20 +223,20 @@ for (let i = 0; i < versos.length; i++) {
                     }
                 }
 
-                trechos.push(`<label class="piece-surface background-color-auto-03 background-color-auto-05-active piece-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+                trechos.push(`<label class="piece-surface background-color-auto-04 background-color-auto-06-active piece-40 ${classes.join(" ")}"><span>${texto}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
             }
         } else if (parte.trim()) {
-            trechos.push(`<label class="piece-surface background-color-auto-03 background-color-auto-05-active piece-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
+            trechos.push(`<label class="piece-surface background-color-auto-04 background-color-auto-06-active piece-40"><span>${parte.trim()}</span><input class="piece-controller" type="radio" name="letra-refrão"></label>`);
         }
     }
 
     // Montar a barra de marcadores (única)
-    let marcadorHTML = `<span class="marcadores piece-surface background-color-auto-00">`;
+    let marcadorHTML = `<span class="marcadores piece-surface background-color-auto-02">`;
     for (let index = 0; index < marcadores.length; index++) {
         const marcador = marcadores[index];
         const valorOriginal = marcador.valor;
 
-        const classeBase = "piece-surface background-color-auto-03 text-color-012 piece-40";
+        const classeBase = "piece-surface background-color-auto-04 text-color-012 piece-40";
         const classeExtra = valorOriginal
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")

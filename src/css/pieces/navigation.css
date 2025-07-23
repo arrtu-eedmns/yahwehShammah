@@ -1,6 +1,13 @@
 .piece-navigation {
 
     display: grid;
+    user-select: none;
+
+    .piece-icon,
+    .piece-label
+    {pointer-events: none !important;}
+
+    .piece-label {font-weight: 500;}
 
     /* bar */
     &.piece-bar {
@@ -72,6 +79,7 @@
     &.piece-rail {
         width: 96px;
         height: 100%;
+        align-content: start;
 
         /* changed by menu */
         &:has(.piece-menu>input:checked) {
@@ -140,7 +148,7 @@
     >header {
         display: grid;
         place-items: center;
-        padding-block: 16px;
+        padding-block: 20px;
 
         #logo {
             font-size: 12px;
@@ -169,7 +177,7 @@
             border-radius: 16px;
             position: absolute;
             top: 2px;
-            display: none;
+            display: grid;
         }
         &:has(input:checked) {
             .piece-indicator {display: grid;}
@@ -182,6 +190,7 @@
             }
         }
         .piece-icon {
+            border-radius: 32px;
             width: 56px;
             height: 32px;
             display: grid;
@@ -281,7 +290,7 @@
             border-radius: 16px;
             position: absolute;
             top: 2px;
-            display: none;
+            display: grid;
         }
         &:has(input:checked) {
             .piece-indicator {display: grid;}
@@ -296,6 +305,7 @@
         .piece-icon {
             width: 56px;
             height: 32px;
+            border-radius: 32px;
             display: grid;
             place-content: center;
             z-index: 1;

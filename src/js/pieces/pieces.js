@@ -11,11 +11,14 @@ function generatePieces(theme) {
     return [
         `&.property-color-${theme}-000`,
         `&.property-color-${theme}-000-hover:hover`,
+        `&:hover>.piece-parent.property-color-${theme}-000-hover`,
         `&.piece-actived.property-color-${theme}-000-active`,
         `&.piece-actived.property-color-${theme}-000-hover-active:hover`,
         `&.property-color-${theme}-000-active:has(.piece-controller:checked)`,
         `&.property-color-${theme}-000-active:has(input[type="text"].piece-controller:focus)`,
         `&:has(.piece-controller:checked)>.piece-parent.property-color-${theme}-000-active`,
+        `&:has(.piece-controller:checked):hover>.piece-parent.property-color-${theme}-000-hover`,
+        `&:has(.piece-controller:checked):hover>.piece-parent.property-color-${theme}-000-hover-active`,
         `&.property-color-${theme}-000-hover-active:has(.piece-controller:checked):hover`,
         `&.piece-actived>.piece-parent.property-color-${theme}-000-active`,
         `&.piece-actived>.piece-parent.property-color-${theme}-000-hover-active:hover`,
@@ -74,3 +77,14 @@ var googleIcons = document.createElement('style');
 googleIcons.innerHTML = `
     @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 `
+
+document.addEventListener('click', e => {
+    document.querySelectorAll('.piece-interactive').forEach(el => {
+        const clickedInside = el.contains(e.target);
+        const clickedInNoInteractive = e.target.closest('.piece-not-interactive');
+
+        // Desativa se for fora ou dentro de .piece-not-interactive
+        const shouldDeactivate = !clickedInside || clickedInNoInteractive;
+        el.classList.toggle('piece-actived', !shouldDeactivate);
+    });
+});
