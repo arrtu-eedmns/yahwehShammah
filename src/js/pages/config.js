@@ -20,7 +20,22 @@ yahwehShammah.pages.push({
                     <span class="material-symbols-rounded piece-icon" translate="no">sync</span>
                     <span class="piece-label">Atualizar App</span>
                 </button>
-                <a href="https://artdevtec.github.io/harpa/index.html">Harpa Cristã</a>
+                <a 
+                    href="https://artdevtec.github.io/harpa/index.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="
+                        piece-button
+                        piece-surface
+                        piece-s-40
+                        background-color-auto-06
+                        text-color-auto-23
+                        background-color-15-hover
+                        piece-tertiary
+                    "
+                >  
+                    <span class="piece-label">Harpa Cristã</span>
+                </a>
             </section>
         `
 
