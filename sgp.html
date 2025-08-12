@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Yahweh Shammah</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+        }
+
+        nav {
+            background: #222;
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            background: #444;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            background: #666;
+        }
+
+        #app {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id="menu"></nav>
+    <main id="app"></main>
+
+    <script>
+        const yahwehShammah = {
+            nome: 'Yahweh Shammah',
+            pages: [
+                {
+                    name: 'Home',
+                    icon: '🏠',
+                    showInNavigation: true,
+                    main(container) {
+                        container.innerHTML = `
+                            <h1>Bem-vindo!</h1>
+                            <p>Você está na página inicial do sistema Yahweh Shammah.</p>
+                        `;
+                    }
+                },
+                {
+                    name: 'Festividade',
+                    icon: '🎉',
+                    showInNavigation: true,
+                    db: [{
+                            nome: 'Páscoa'
+                        },
+                        {
+                            nome: 'Pentecostes'
+                        },
+                        {
+                            nome: 'Tabernáculos'
+                        }
+                    ],
+                    main(container) {
+                        container.innerHTML = `
+                            <h1>Festividades</h1>
+                            <ul>
+                                ${this.db.map(f => `<li>${f.nome}</li>`).join('')}
+                            </ul>
+                        `;
+                    }
+                },
+                {
+                    name: 'Sobre',
+                    icon: 'ℹ️',
+                    showInNavigation: true,
+                    main(container) {
+                        container.innerHTML = `
+                            <h1>Sobre o Sistema</h1>
+                            <p>Este é um exemplo SPA em JavaScript puro.</p>
+                        `;
+                    }
+                }
+            ],
+
+            renderMenu() {
+                const menu = document.getElementById('menu');
+                menu.innerHTML = this.pages
+                    .filter(p => p.showInNavigation)
+                    .map(p => `<a href="#${p.name}">${p.icon} ${p.name}</a>`)
+                    .join('');
+            },
+
+            renderPage(name) {
+                const page = this.pages.find(p => p.name === name);
+                const app = document.getElementById('app');
+                if (page && typeof page.main === 'function') {
+                    page.main(app);
+                } else {
+                    app.innerHTML = '<h1>Página não encontrada</h1>';
+                }
+            },
+
+            init() {
+                this.renderMenu();
+                const initialPage = location.hash.replace('#', '') || 'Home';
+                this.renderPage(initialPage);
+
+                window.addEventListener('hashchange', () => {
+                    const pageName = location.hash.replace('#', '') || 'Home';
+                    this.renderPage(pageName);
+                });
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            yahwehShammah.init();
+        });
+    </script>
+</body>
+
+</html>
