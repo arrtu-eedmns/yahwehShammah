@@ -88,7 +88,7 @@
         display: grid;
         .bloco {
             display: grid;
-            padding: 0 16px 16px 16px;
+            padding: 0px 16px;
             position: relative;
             --font-sizes: 5;
             &>header {
@@ -152,12 +152,19 @@
             }
 
             .marcador-dpto {--piece-h: 261;}
+            .marcador-dptotodos {--piece-h: 261;}
             .marcador-solo {--piece-h: 48; text-decoration: underline;}
             .marcador-s {--piece-h: 48; text-decoration: underline;}
             .marcador-masculino {--piece-h: 180;}
             .marcador-m {--piece-h: 180;}
+            .marcador-dptohomens {--piece-h: 180;}
+            .marcador-dptomasculino {--piece-h: 180;}
+            .marcador-dptom {--piece-h: 180;}
             .marcador-feminino {--piece-h: 300;}
             .marcador-f {--piece-h: 300;}
+            .marcador-dptomulheres {--piece-h: 300;}
+            .marcador-dptofeminino {--piece-h: 300;}
+            .marcador-dptof {--piece-h: 300;}
 
             .marcador-solomasculino {
                 text-decoration: underline;
