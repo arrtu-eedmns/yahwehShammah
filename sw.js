@@ -1,5 +1,5 @@
 // Versão do cache (mude sempre que atualizar arquivos)
-const CACHE_NAME = "V4";
+const CACHE_NAME = "V5";
 
 // Lista de arquivos essenciais do seu repositório GitHub
 const STATIC_CACHE_URLS = [
