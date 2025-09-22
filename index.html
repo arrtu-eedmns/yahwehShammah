@@ -2,6 +2,24 @@
     <html lang="pt-BR">
     <head>
 
+        <!-- Firebase -->
+        <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js"></script>
+
+        <script>
+            // Config Firebase
+            const firebaseConfig = {
+            apiKey: "AIzaSyB2Gkim-k9GNZk02t414bZcPSO-z7QlzDE",
+            authDomain: "yahweh-shammah-74033.firebaseapp.com",
+            projectId: "yahweh-shammah-74033",
+            storageBucket: "yahweh-shammah-74033.appspot.com",
+            messagingSenderId: "1090658649746",
+            appId: "1:1090658649746:web:927ffb00842f52d7d2084b"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+        </script>
+
         <!-- PWA -->
         <link rel="manifest" href="manifest.json" />
 		<meta name="description" content="Letras dos hinos da Yahweh Shammah">
@@ -85,7 +103,7 @@
         <script src="src/js/pages/home.js" defer></script>
         <script src="src/js/pages/letras.js" defer></script>
         <script src="src/js/pages/festividade.js" defer></script>
-        <script src="src/js/pages/favorite.js" defer></script>
+        <script src="src/js/pages/CRUD.js" defer></script>
         <script src="src/js/pages/config.js" defer></script>
 
         <!-- last m js -->

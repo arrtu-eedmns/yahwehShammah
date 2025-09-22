@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Quebra de linha para novo textarea</title>
+</head>
+<body>
+
+<div id="container">
+    <textarea id="original" rows="4" cols="50" placeholder="Digite algo com quebras de linha..."></textarea>
+</div>
+
+<script>
+const container = document.getElementById('container');
+const original = document.getElementById('original');
+
+original.addEventListener('input', () => {
+    // Limpa os textareas existentes (exceto o original)
+    const extras = container.querySelectorAll('.extra');
+    extras.forEach(e => e.remove());
+
+    // Pega o valor e separa pelas quebras de linha
+    const linhas = original.value.split('\n');
+
+    linhas.forEach((linha, index) => {
+        if (index === 0) return; // primeira linha já está no original
+        const newTextarea = document.createElement('textarea');
+        newTextarea.className = 'extra';
+        newTextarea.rows = 4;
+        newTextarea.cols = 50;
+        newTextarea.value = linha;
+        container.appendChild(newTextarea);
+    });
+});
+</script>
+
+</body>
+</html>

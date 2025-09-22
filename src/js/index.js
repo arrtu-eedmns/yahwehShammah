@@ -1,3 +1,11 @@
+//serviceWorker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/yahwehShammah/sw.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.log('SW registration failed:', err));
+}
+
+
 //Define o tema claro ou escuro
 if(localStorage.yahwehShammah) {
     if(yahwehShammah.darkMode.get()) document.body.classList.add("piece-dark")
