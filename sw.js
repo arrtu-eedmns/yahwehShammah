@@ -3,7 +3,9 @@ const CACHE_NAME = "V4";
 
 // Lista de arquivos essenciais do seu repositório GitHub
 const STATIC_CACHE_URLS = [
-    "/yahwehShammah/",        // página inicial
+    "/yahwehShammah/", // página inicial
+    "https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap", //Montserrat
+    "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" //Material+Symbols
     // adicione outros arquivos essenciais como imagens, fontes, etc.
 ];
 
