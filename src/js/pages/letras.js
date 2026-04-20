@@ -33,15 +33,15 @@ MPSO.newView({
             
             let letras = localStorage.getItem("letras-db");
             if (!letras) {
-                container.innerHTML = "<p>Nenhuma letra encontrada no cache.</p>";
+                view.innerHTML = "<p style='padding:16px;opacity:.5;'>Nenhuma letra encontrada. Sincronize em Configurações.</p>";
                 return;
             }
-    
+
             try {
                 letras = JSON.parse(letras);
             } catch (e) {
                 console.error("Erro ao ler letras do localStorage:", e);
-                container.innerHTML = "<p>Erro ao carregar letras.</p>";
+                view.innerHTML = "<p style='padding:16px;opacity:.5;'>Erro ao carregar letras.</p>";
                 return;
             }
     

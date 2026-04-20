@@ -20,6 +20,9 @@
     <!-- Material Pieces -->
     <link rel="stylesheet" href="src/css/pieces/pieces.css">
     <script src="src/js/pieces/pieces.js"></script>
+    <script src="src/js/pieces/piece-css-generator.js"></script>
+    <script src="src/js/pieces/ripple.js"></script>
+    <script src="src/js/pieces/interactive.js"></script>
     <!-- m css -->
     <link rel="stylesheet" href="src/css/style.css">
     <!-- events -->
@@ -30,13 +33,17 @@
     <!-- <link rel="stylesheet" href="src/css/pages/agenda.css"> -->
     <link rel="stylesheet" href="src/css/pages/configuracoes.css">
     <!-- m js -->
-    <script type="module" src="src/js/firebase.js"></script>
-    <script type="module" src="src/js/logo.js"></script>
+    <!-- Firebase compat (sem módulos — funciona em file:// e HTTP) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="src/js/firebase.js"></script>
+    <script src="src/js/logo.js"></script>
     <script src="src/js/MPSO.js"></script>
     <!-- m pages -->
     <script src="src/js/pages/letras.js" defer></script>
     <script src="src/js/pages/pesquisa.js" defer></script>
-    <!-- <script src="src/js/pages/letras.js" defer></script> -->
+    <script src="src/js/pages/imprimir.js" defer></script>
+    <script src="crud.js" defer></script>
     <script src="src/js/pages/configuracoes.js" defer></script>
     <!-- last m js -->
     <script defer type="text/javascript" src="src/js/index.js"></script>
@@ -44,7 +51,7 @@
     <!-- <script defer type="text/javascript" src="/src/js/MPSO.js"></script> -->
 
     <!-- PWA -->
-    <link rel="manifest" href="manifest.json" />
+    <!-- <link rel="manifest" href="manifest.json" /> -->
     <script src="PWA.js" defer></script>
     <meta name="description" content="Letras dos hinos da Yahweh Shammah">
     <meta name="mobile-web-app-capable" content="yes" />
@@ -52,15 +59,10 @@
     <meta name="msapplication-starturl" content="/yahwehShammah/index.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   </head>
-  <body class="default load-end piece-triade piece-surface background-color-auto-25 text-color-auto-21 ripple-color-inverse-02">
+  <body class="screen-size-default load-end piece-triade piece-surface background-color-auto-25 text-color-auto-21 ripple-color-inverse-02">
     
-    <div class="animation-container piece-surface background-color-auto-06">
-      <div class="core piece-surface background-color-auto-02">
-        <div class="spoke piece-surface background-color-auto-06"></div>
-        <div class="spoke piece-surface background-color-auto-06"></div>
-        <div class="spoke piece-surface background-color-auto-06"></div>
-        <div class="spoke piece-surface background-color-auto-06"></div>
-      </div>
+    <div class="animation-container">
+      <div class="core"><i>Y</i></div>
     </div>
 
     <header id="m-header" class="piece-surface background-color-auto-02">

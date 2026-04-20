@@ -3,4 +3,5 @@
     padding: 16px;
     gap: 16px;
     align-content: start;
+    overflow-y: auto;
 }

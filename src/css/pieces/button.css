@@ -1,8 +1,6 @@
 .piece-button {
-    
+
     min-width: 40px;
-    height: 40px;
-    border-radius: 1000000px;
     box-sizing: border-box;
 
     display: grid;
@@ -13,14 +11,14 @@
     place-items: center;
     text-decoration: none;
 
-    cursor: pointer;
+    cursor: var(--cursor-pointer);
     transition:
         background 0.3s ease,
-        border-radius 0.1s ease,
-        border-radius .3 ease-in-out
-    ;
-    transition: .3s;
+        border-radius 0.2s ease;
     position: relative;
+
+    height: var(--height);
+    border-radius: var(--border-radius);
 
     :where(*, * *) {
         pointer-events: none;
@@ -31,103 +29,151 @@
         display: grid;
         place-content: center;
         font-weight: 500;
+        text-wrap: nowrap;
     }
 
-    /* &:has(.icon):not(:has(.label)) {
-        padding: 0;
-        border-radius: 100%;
-        aspect-ratio: 1/1;
-    }
+    .material-symbols-rounded { pointer-events: none; }
 
-    &:has(.label):not(:has(.icon)) { padding: 0 16px;} */
-
-    cursor: var(--cursor-pointer);
-
-    .material-symbols-rounded { pointer-events: none;}
-
-    input { display: none;}
+    input { display: none; }
 
     &:has(input:checked) .piece-icon {
         font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
 
+    &:not(:has(input:checked)) {
+        .piece-false { display: grid; }
+        .piece-true  { display: none;  }
+    }
+
+    &:has(input:checked),
+    &.piece-actived {
+        .piece-false { display: none;  }
+        .piece-true  { display: grid; }
+    }
+
+    &:active,
+    &:has(input:checked),
+    &.piece-actived {
+        border-radius: var(--active-radius);
+    }
+
+    &.piece-outlined {
+        border-width: 1px;
+        border-style: solid;
+        &:not(:hover) { background: transparent; }
+    }
+
+    &.piece-elevated {
+        box-shadow: 0px 0px 4px 0px hsla(
+            var(--piece-box-shadow-color-h),
+            var(--piece-s),
+            var(--piece-box-shadow-color),
+            var(--piece-box-shadow-a)
+        );
+    }
+
+    &.piece-text:not(:hover) { background: transparent; }
+
     &.piece-extra-small {
-        height: 32px;
+        --height: 32px;
+        --border-radius: 16px;
+        --active-radius: 12px;
         padding: 12px;
         gap: 4px;
-        &:active {border-radius: 12px;}
-        .piece-label {font-size: 14px;}
-        .piece-icon {font-size: 20px;}
+        .piece-label { font-size: 14px; }
+        .piece-icon  { font-size: 20px; }
     }
+
     &.piece-small {
-        height: 40px;
+        --height: 40px;
+        --border-radius: 20px;
+        --active-radius: 12px;
         padding: 16px;
         gap: 8px;
-        &:active {border-radius: 12px;}
-        .piece-label {font-size: 14px;}
-        .piece-icon {font-size: 24px;}
+        .piece-label { font-size: 14px; }
+        .piece-icon  { font-size: 24px; }
     }
+
     &.piece-medium {
-        height: 56px;
+        --height: 56px;
+        --border-radius: 28px;
+        --active-radius: 16px;
         padding: 24px;
         gap: 8px;
-        &:active {border-radius: 16px;}
-        .piece-label {font-size: 16px;}
-        .piece-icon {font-size: 24px;}
+        .piece-label { font-size: 16px; }
+        .piece-icon  { font-size: 24px; }
     }
+
     &.piece-large {
-        height: 96px;
+        --height: 96px;
+        --border-radius: 48px;
+        --active-radius: 28px;
         padding: 48px;
         gap: 12px;
-        &:active {border-radius: 28px;}
-        .piece-label {font-size: 24px;}
-        .piece-icon {font-size: 32px;}
+        .piece-label { font-size: 24px; }
+        .piece-icon  { font-size: 32px; }
     }
+
     &.piece-extra-large {
-        height: 136px;
+        --height: 136px;
+        --border-radius: 68px;
+        --active-radius: 28px;
         padding: 64px;
         gap: 16px;
-        &:active {border-radius: 28px;}
-        .piece-label {font-size: 32px;}
-        .piece-icon {font-size: 40px;}
+        .piece-label { font-size: 32px; }
+        .piece-icon  { font-size: 40px; }
     }
 }
 
 .piece-group-button {
-    --button-radius: 100000px;           /* borda totalmente arredondada */
-    --selected-radius: 12px;        /* borda dos filhos do meio */
-    --button-gap: 8px;
 
+    --gap: 2px;
     display: inline-flex;
-    gap: var(--button-gap);
+    gap: var(--gap);
 
-    /* todos os botões dentro do grupo */
     > .piece-button {
-        border-radius: var(--selected-radius);
-        transition: border-radius 0.15s;
+        transition: border-radius 0.15s ease;
 
-        /* botão selecionado */
+        &.piece-extra-small {
+            --round: 4px;
+            --fully-round: calc(32px / 2);
+        }
+        &.piece-small {
+            --round: 8px;
+            --fully-round: calc(40px / 2);
+        }
+        &.piece-medium {
+            --round: 8px;
+            --fully-round: calc(56px / 2);
+        }
+        &.piece-large {
+            --round: 16px;
+            --fully-round: calc(96px / 2);
+        }
+        &.piece-extra-large {
+            --round: 20px;
+            --fully-round: calc(136px / 2);
+        }
+
+        border-radius: var(--round);
+
         &.active,
         &:has(input:checked) {
-            border-radius: var(--button-radius);
+            border-radius: var(--fully-round);
         }
 
-        /* primeiro filho do grupo */
         &:first-child {
-            border-radius: var(--button-radius) 0 0 var(--button-radius);
+            border-radius: var(--fully-round) var(--round) var(--round) var(--fully-round);
         }
-
-        /* último filho do grupo */
         &:last-child {
-            border-radius: 0 var(--button-radius) var(--button-radius) 0;
+            border-radius: var(--round) var(--fully-round) var(--fully-round) var(--round);
         }
-
-        /* filhos do meio ficam com border-radius menor */
         &:not(:first-child):not(:last-child):not(:has(input:checked)) {
-            border-radius: var(--selected-radius);
+            border-radius: var(--round);
         }
     }
 }
+
 
 
 

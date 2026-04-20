@@ -1,4 +1,4 @@
-.piece-checkbox {
+.piece-radio {
     transition: .3s;
     width: clamp(var(--button-width), var(--button-width), var(--button-width));
     height: var(--height);
@@ -48,8 +48,8 @@
     &.piece-extra-small {
         --button-width: 32px;
         --height: 32px;
-        --border-radius: 8px;
-        --active-radius: 10px;
+        --border-radius: 136px;
+        --active-radius: 136px;
         --icon-size: 20px;
 
         &.piece-narrow { --button-width: 28px; }
@@ -60,8 +60,8 @@
     &.piece-small {
         --button-width: 40px;
         --height: 40px;
-        --border-radius: 10px;
-        --active-radius: 12px;
+        --border-radius: 136px;
+        --active-radius: 136px;
         --icon-size: 24px;
 
         &.piece-narrow { --button-width: 32px; }
@@ -72,8 +72,8 @@
     &.piece-medium {
         --button-width: 56px;
         --height: 56px;
-        --border-radius: 12px;
-        --active-radius: 16px;
+        --border-radius: 136px;
+        --active-radius: 136px;
         --icon-size: 24px;
 
         &.piece-narrow { --button-width: 48px; }
@@ -84,8 +84,8 @@
     &.piece-large {
         --button-width: 96px;
         --height: 96px;
-        --border-radius: 20px;
-        --active-radius: 28px;
+        --border-radius: 136px;
+        --active-radius: 136px;
         --icon-size: 32px;
 
         &.piece-narrow { --button-width: 64px; }
@@ -96,8 +96,8 @@
     &.piece-extra-large {
         --button-width: 136px;
         --height: 136px;
-        --border-radius: 28px;
-        --active-radius: 36px;
+        --border-radius: 136px;
+        --active-radius: 136px;
         --icon-size: 40px;
 
         &.piece-narrow { --button-width: 104px; }

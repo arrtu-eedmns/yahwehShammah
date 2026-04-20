@@ -1,56 +1,55 @@
-.piece-card-shortcut {
-    width: 5rem;
-    height: 8.75rem;
-    border-radius: 12px;
-    border-style: solid;
-    border-width: 1px;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    text-decoration: none;
-    user-select: none;
-    box-sizing: border-box;
-    cursor: var(--cursor-pointer);
+.card-link.piece-surface {
+	border-radius: 12px;
+	border-width: 1px;
+	border-style: solid;
+	display: grid;
+	width: 80px;
+	height: 140px;
+	padding: 4px;
+	gap: 4px;
+	user-select: none;
+	text-decoration: none;
 
-    .content-image {
-        display: grid;
-        border-radius: 8px;
-        margin: 0.25rem;
-        padding: 8px;
+	.icon-content {
+		width: 70px;
+		height: 70px;
+		display: grid;
+		border-radius: 8px;
 
-        .img {
-            aspect-ratio: 1/1;
+		&>:nth-child(1):not(.piece-icon) {
+			width: 46px;
+			height: 46px;
+			background: var(--url) center / contain no-repeat;
+			display: grid;
+			margin: auto;
+		}
 
-            &.themed {
-                mask-image: var(--url);
-                mask-size: calc(60px - (12px));
-                mask-repeat: no-repeat;
-                mask-position: center;
-                overflow: hidden;
+		&>:nth-child(1):not(.piece-icon).mask {
+			/* background: #777; */
+			background: hsl(var(--piece-h), 32%, calc(var(--piece-theme-inverse) var(--piece-theme-operator-inverse) 32%));
+			mask: var(--url) center / contain no-repeat;
+		}
 
-                .icon-color {
-                    background: hsl(var(--piece-h), var(--piece-s), 48%);
-                    width: 100px;
-                    height: 100px;
-                    display: block;
-                }
-            }
+		.piece-icon {
+			font-size: 48px;
+			line-height: 70px;
+			text-align: center;
+			/* color: #777; */
+		}
+	}
 
-            &.default {
-                background: var(--url);
-                background-size: cover;
-            }
+	.label-content {
+		font-size: 12px;
+		font-weight: 600;
+		text-align: center;
+		overflow: hidden;
+	}
 
-            img {width: calc(100% - 8px);}
-        }
-    }
+	&.short {
+		height: 80px;
 
-    .label {
-        font-size: 12px;
-        font-weight: 500;
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-        text-align: center;
-        pointer-events: none;
-    }
+		.label-content {
+			display: none;
+		}
+	}
 }

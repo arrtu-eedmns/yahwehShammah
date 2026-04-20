@@ -1,37 +1,86 @@
 .piece-progress-indicator {
-    --progress-indicator-background: 
-        hsla(var(--h),var(--s),calc(var(--surface-background) var(--tema-calc) 8%),var(--a))
-    ;
-    background: var(--progress-indicator-background);
-    height: 4px;
-    width: 100%;
     display: grid;
-    overflow: hidden;
     pointer-events: none;
-    opacity: 0;
+    border-radius: 2px;
 
-    &.on {
-        opacity: 1;
-    }
+    --piece-percentage:   0%;
+    --piece-track-width:  4px;
 
-    .indicator {
-        background: hsla(var(--h),var(--s),48%,var(--a));
-        width: 0%;
-        transition: .3s;
-    }
+    &.piece-absolute { position: absolute; }
 
-    &.absolute {
-        position: absolute;
-    }
-    &.start {
-        .indicator {
-            width: 75%;
+
+    /* ─────────────────────────────────────
+       BAR
+    ───────────────────────────────────── */
+
+    &.piece-bar {
+        overflow: hidden;
+        height: 4px;
+        width: 100%;
+
+        .piece-indicator {
+            height: 100%;
+            border-radius: 2px;
+            width: var(--piece-percentage);
+            transition: width .3s;
+        }
+
+        /* indeterminate — segmento deslizante */
+        &.piece-indeterminate .piece-indicator {
+            width: 40%;
+            transition: none;
+            animation: piece-bar-indeterminate 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
         }
     }
-    &.end {
-        .indicator {
-            width: 100%;
+
+
+    /* ─────────────────────────────────────
+       CIRCLE
+    ───────────────────────────────────── */
+
+    &.piece-circle {
+        border-radius: 50%;
+        position: relative;
+
+        /* máscara no container = anel — recorta tanto o track quanto o arco */
+        -webkit-mask: radial-gradient(
+            farthest-side,
+            transparent calc(100% - var(--piece-track-width)),
+            black       calc(100% - var(--piece-track-width))
+        );
+        mask: radial-gradient(
+            farthest-side,
+            transparent calc(100% - var(--piece-track-width)),
+            black       calc(100% - var(--piece-track-width))
+        );
+
+        /* track = background do próprio container (background-color-auto-06 etc.) */
+
+        /* arco = .piece-indicator com conic-gradient usando as vars do seu piece-surface */
+        > .piece-indicator {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: conic-gradient(currentColor var(--piece-percentage), transparent 0);
+        }
+
+        /* indeterminate — arco de 25% girando */
+        &.piece-indeterminate > .piece-indicator {
+            background: conic-gradient(currentColor 25%, transparent 0);
+            animation: piece-circle-indeterminate 1s linear infinite;
         }
     }
+}
 
+
+/* ── Animações ───────────────────────────────────────────── */
+
+@keyframes piece-bar-indeterminate {
+    0%   { transform: translateX(-250%); }
+    100% { transform: translateX(250%); }
+}
+
+@keyframes piece-circle-indeterminate {
+    from { transform: rotate(0deg);   }
+    to   { transform: rotate(360deg); }
 }

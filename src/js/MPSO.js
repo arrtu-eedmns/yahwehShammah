@@ -68,17 +68,18 @@ const MPSO = {
             $("#m-main").innerHTML = "<p>Página não encontrada</p>";
         }
 
-        let nav = $(`.piece-item input[value="${this.globalFns.normalize(viewName)}"]`)
-        nav.checked = true;
+        const nav = $(`.piece-item input[value="${this.globalFns.normalize(viewName)}"]`)
+        if (nav) nav.checked = true;
     },
 
-    // Inicia o router <ia>
+    // Inicia o router
     initRouter(){
         let initial = location.hash.replace("#", "");
 
         if (!initial) {
             initial = this.globalFns.normalize(this.views[0]?.name);
-            location.hash = initial;
+            // replaceState não dispara hashchange — evita renderView duplo
+            history.replaceState(null, '', '#' + initial);
         }
 
         this.renderView(initial);
@@ -242,22 +243,30 @@ MPSO.storage = {}
 
 // Define e inicializa o localStorage se não existir
 MPSO.defineLocalStorage = function() {
-    const key = MPSO.name; // usa o name do MPSO como chave
-    if (!localStorage[key]) {
-        localStorage[key] = JSON.stringify({
-            dark: true,
-            HUEMainColor: 248,
-            paleta: "analoga",
-            fontSize: 1,
-            favoritos: [],
-            presentation: "null",
-            developerMode: false,
-            mainApp: null,
-            iconThemed: true,
-            event_snow: false
-        });
+    const key = MPSO.name;
+    const defaults = {
+        dark: true,
+        HUEMainColor: 21,
+        paleta: "analoga",
+        fontSize: 1,
+        favoritos: [],
+        presentation: "null",
+        developerMode: false,
+        mainApp: null,
+        iconThemed: true,
+        event_snow: false
+    };
+    let existing = {};
+    try {
+        existing = localStorage[key] ? JSON.parse(localStorage[key]) : {};
+        if (typeof existing !== 'object' || existing === null) existing = {};
+    } catch (e) {
+        existing = {};
     }
-    return JSON.parse(localStorage[key]);
+    // Mescla: preserva valores existentes, adiciona campos novos dos defaults
+    const merged = { ...defaults, ...existing };
+    localStorage[key] = JSON.stringify(merged);
+    return merged;
 }
 
 // Atualiza o localStorage
@@ -352,7 +361,7 @@ MPSO.event_snow_function = function () {
                 <div class="snow"></div>
             </div>
         `
-        document.body.appendChild(MPSO.create(template)[0]);
+        document.body.appendChild(MPSO.globalFns.create(template)[0]);
     } else {
         document.querySelector('#event-snow')?.remove();
     }

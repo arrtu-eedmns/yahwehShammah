@@ -16,9 +16,14 @@
 @import url("badge.css");
 @import url("tooltip.css");
 @import url("snackbar.css");
+@import url("radio.css");
 @import url("switch.css");
 @import url("FAB-menu.css");
 @import url("ripple.css");
+@import url("table.css");
+@import url("progressIndicator.css");
+@import url("table.css");
+@import url("menu.css");
 
 /* import font/icon */
 @import url('https://fonts.googleapis.com/css2?family=Yuji+Boku&display=swap');
