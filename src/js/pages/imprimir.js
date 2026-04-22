@@ -81,7 +81,9 @@ MPSO.newView({
             document.head.appendChild(style);
         }
         const size = this.state.orientacao === "paisagem" ? "A4 landscape" : "A4 portrait";
-        style.textContent = `@page { size: ${size}; margin: 5mm; }`;
+        // margin: 0 → a própria padding da .imp-pagina (5mm) serve de margem visual
+        // assim height: 297mm/210mm coincide exatamente com o papel, sem segunda página
+        style.textContent = `@page { size: ${size}; margin: 0; }`;
     },
 
     // ─── Atualizar preview ────────────────────────────────────
@@ -144,7 +146,9 @@ MPSO.newView({
         })
     },
 
-    // ─── Auto-calcular fonte + colunas ───────────────────────
+    // ─── Auto-calcular fonte ─────────────────────────────────
+    // Respeita colunas e repetições definidas pelo usuário;
+    // só ajusta o tamanho do texto para caber na folha.
     async autoCalc() {
         if (!this.state.letraSelecionada) return
 
@@ -152,72 +156,37 @@ MPSO.newView({
         if (btn) { btn.classList.add('piece-disabled'); btn.$('.piece-icon').textContent = 'hourglass_empty' }
 
         const ratio = this.state.fonteTitle / Math.max(this.state.fonteVerso, 1)
-        let bestVerso = 8, bestColunas = 1
 
-        // força 1 repetição para calcular fonte/colunas
-        this.state.repeticoes = 1
-        document.getElementById('imp-reps-val').textContent = 1
+        // garante que o preview está com os valores atuais de cols e reps
+        this.atualizarPreview()
+        await new Promise(r => requestAnimationFrame(r))
 
-        // itera colunas do mínimo ao máximo: para na primeira que cabe
-        for (let cols = 1; cols <= 6; cols++) {
-            this.state.colunas = cols
-            this.atualizarPreview()   // reconstrói DOM com novas colunas
-            await new Promise(r => requestAnimationFrame(r))
-
-            const pagina = document.getElementById('imp-pagina')
-            if (!pagina) break
-
-            // testa se fonte mínima (8px) já não cabe → tenta mais colunas
-            document.documentElement.style.setProperty('--imp-fonte-verso', 8)
-            document.documentElement.style.setProperty('--imp-fonte-titulo', Math.round(8 * ratio))
-            await new Promise(r => requestAnimationFrame(r))
-
-            if (pagina.scrollHeight > pagina.clientHeight + 2) continue
-
-            // busca binária: maior fonte que cabe nestas colunas
-            let lo = 8, hi = 32, best = 8
-            while (lo <= hi) {
-                const mid = Math.floor((lo + hi) / 2)
-                document.documentElement.style.setProperty('--imp-fonte-verso', mid)
-                document.documentElement.style.setProperty('--imp-fonte-titulo', Math.round(mid * ratio))
-                await new Promise(r => requestAnimationFrame(r))
-                if (pagina.scrollHeight <= pagina.clientHeight + 2) { best = mid; lo = mid + 1 }
-                else hi = mid - 1
-            }
-
-            bestVerso = best
-            bestColunas = cols
-            break   // mínimas colunas com a melhor fonte
+        const pagina = document.getElementById('imp-pagina')
+        if (!pagina) {
+            if (btn) { btn.classList.remove('piece-disabled'); btn.$('.piece-icon').textContent = 'auto_fix_high' }
+            return
         }
 
-        // aplica resultado
+        // busca binária: maior fonte que cabe com as config atuais
+        let lo = 8, hi = 32, bestVerso = 8
+        while (lo <= hi) {
+            const mid = Math.floor((lo + hi) / 2)
+            document.documentElement.style.setProperty('--imp-fonte-verso',  mid)
+            document.documentElement.style.setProperty('--imp-fonte-titulo', Math.round(mid * ratio))
+            await new Promise(r => requestAnimationFrame(r))
+            if (pagina.scrollHeight <= pagina.clientHeight + 2) { bestVerso = mid; lo = mid + 1 }
+            else hi = mid - 1
+        }
+
         const bestTitle = Math.round(bestVerso * ratio)
-        this.state.fonteVerso  = bestVerso
-        this.state.fonteTitle  = bestTitle
-        this.state.colunas     = bestColunas
+        this.state.fonteVerso = bestVerso
+        this.state.fonteTitle = bestTitle
         document.documentElement.style.setProperty('--imp-fonte-verso',  bestVerso)
         document.documentElement.style.setProperty('--imp-fonte-titulo', bestTitle)
-        document.documentElement.style.setProperty('--imp-colunas',      bestColunas)
-        document.getElementById('imp-val-verso').textContent   = bestVerso
-        document.getElementById('imp-val-titulo').textContent  = bestTitle
-        document.getElementById('imp-colunas-val').textContent = bestColunas
+        document.getElementById('imp-val-verso').textContent  = bestVerso
+        document.getElementById('imp-val-titulo').textContent = bestTitle
         document.getElementById('imp-range-verso').value  = bestVerso
         document.getElementById('imp-range-titulo').value = bestTitle
-
-        // tenta encaixar mais repetições
-        for (let r = 2; r <= 8; r++) {
-            this.state.repeticoes = r
-            this.atualizarPreview()
-            await new Promise(r2 => requestAnimationFrame(r2))
-            const p = document.getElementById('imp-pagina')
-            if (!p || p.scrollHeight > p.clientHeight + 2) {
-                this.state.repeticoes = r - 1
-                document.getElementById('imp-reps-val').textContent = r - 1
-                this.atualizarPreview()
-                break
-            }
-            document.getElementById('imp-reps-val').textContent = r
-        }
 
         if (btn) { btn.classList.remove('piece-disabled'); btn.$('.piece-icon').textContent = 'auto_fix_high' }
         await new Promise(r => requestAnimationFrame(r))
@@ -416,14 +385,19 @@ MPSO.newView({
                     #view-imprimir.imp-mobile-detail #imp-area      { display: grid; }
                     #view-imprimir.imp-mobile-detail #imp-controles { display: grid; }
 
-                    /* header de controles mobile: back + toggle */
-                    .imp-ctrl-header {
-                        display: grid;
+                    /* header mobile: voltar | imprimir | expande */
+                    #view-imprimir .imp-ctrl-header {
+                        display: grid !important;
                         grid-template-columns: auto 1fr auto;
                         align-items: center;
                         gap: 8px;
                     }
-                    #imp-toggle-ctrl { display: flex; }
+                    #view-imprimir #imp-back-btn          { display: flex !important; }
+                    #view-imprimir #imp-btn-print-mobile  { display: none !important; }
+                    #view-imprimir #imp-toggle-ctrl       { display: flex !important; grid-column: 3; }
+
+                    /* print aparece só quando controles estão escondidos (preview expandido) */
+                    #view-imprimir.imp-hide-ctrl #imp-btn-print-mobile { display: flex !important; }
 
                     /* área: centraliza a folha */
                     #view-imprimir #imp-area {
@@ -443,20 +417,26 @@ MPSO.newView({
                     }
                 }
 
-                /* @page size é controlado dinamicamente por atualizarPageSize() */
-                @page { margin: 5mm; }
+                /* @page size + margin: 0 controlados por atualizarPageSize() */
+                @page { margin: 0; }
 
                 @media print {
                     body > *:not(#m-main) { display: none !important; }
                     #m-main { display: block !important; overflow: visible !important; }
                     #view-imprimir { display: block !important; }
                     #view-imprimir > *:not(#imp-area) { display: none !important; }
-                    #imp-area { overflow: visible !important; padding: 0 !important; display: block !important; }
+                    #imp-area    { display: block !important; overflow: visible !important; padding: 0 !important; }
+                    #imp-preview { display: block !important; }
                     .imp-pagina {
-                        box-shadow: none !important; page-break-after: always;
-                        width: 100% !important; height: auto !important;
-                        min-height: 0 !important; overflow: visible !important;
-                        padding: 0 !important; zoom: 1 !important;
+                        /* mantém display:flex + width/height/padding originais */
+                        /* @page margin:0 garante que 297mm/210mm coincide com o papel */
+                        box-shadow: none !important;
+                        overflow: hidden !important;   /* corta o que não coube — igual ao preview */
+                        zoom: 1 !important;
+                        text-align: left !important;
+                    }
+                    .imp-copia, .bloco, .bloco h3, .bloco p {
+                        text-align: left !important;
                     }
                 }
             </style>
@@ -477,7 +457,7 @@ MPSO.newView({
             <!-- Controles -->
             <div id="imp-controles" class="piece-surface background-color-auto-02">
 
-                <!-- header mobile: voltar + toggle -->
+                <!-- header mobile: voltar | imprimir | expande -->
                 <div class="imp-ctrl-header">
                     <button id="imp-back-btn" class="
                         piece-icon-button piece-small piece-surface
@@ -487,15 +467,27 @@ MPSO.newView({
                         <span class="material-symbols-rounded piece-icon" translate="no">arrow_back</span>
                         <span class="piece-ripple"></span>
                     </button>
-                    <span></span>
-                    <button id="imp-toggle-ctrl" class="
-                        piece-icon-button piece-small piece-surface
-                        background-color-auto-04 background-color-auto-06-hover
-                        text-color-auto-20 ripple-color-auto-00
+                    <button id="imp-btn-print-mobile" class="
+                        piece-button piece-medium piece-surface piece-s-40
+                        piece-primary background-color-auto-11
+                        background-color-auto-12-hover text-color-auto-00
+                        ripple-color-auto-00
                     ">
-                        <span class="material-symbols-rounded piece-icon" translate="no">keyboard_arrow_down</span>
+                        <span class="material-symbols-rounded piece-icon" translate="no">print</span>
+                        <span class="piece-label">Imprimir</span>
                         <span class="piece-ripple"></span>
                     </button>
+                    <label id="imp-toggle-ctrl" class="
+                        piece-icon-button piece-small piece-surface
+                        background-color-auto-04 background-color-auto-06-hover
+                        background-color-auto-11-active background-color-auto-13-hover-active
+                        text-color-auto-20 text-color-auto-00-active
+                        ripple-color-auto-00
+                    ">
+                        <span class="material-symbols-rounded piece-icon" translate="no">unfold_less</span>
+                        <input type="checkbox" class="piece-controller">
+                        <span class="piece-ripple"></span>
+                    </label>
                 </div>
 
                 <div class="ctrl-linha">
@@ -627,17 +619,25 @@ MPSO.newView({
         }
 
         // ── Back button (mobile) ──────────────────────────────
+        const toggleInput = document.querySelector('#imp-toggle-ctrl .piece-controller')
         document.getElementById("imp-back-btn").addEventListener("click", () => {
             view.classList.remove('imp-mobile-detail', 'imp-hide-ctrl');
+            toggleInput.checked = false
+            document.querySelector('#imp-toggle-ctrl .piece-icon').textContent = 'unfold_less'
         });
 
-        // ── Toggle controles (mobile) ─────────────────────────
-        document.getElementById("imp-toggle-ctrl").addEventListener("click", () => {
-            const hidden = view.classList.toggle('imp-hide-ctrl')
-            document.querySelector('#imp-toggle-ctrl .material-symbols-rounded').textContent =
-                hidden ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
-            // recalcula zoom com área maior/menor
-            setTimeout(() => this.atualizarPreview(), 50)
+        // ── Toggle controles (mobile) — usa piece-controller ──
+        toggleInput.addEventListener('change', () => {
+            const hidden = toggleInput.checked
+            view.classList.toggle('imp-hide-ctrl', hidden)
+            document.querySelector('#imp-toggle-ctrl .piece-icon').textContent =
+                hidden ? 'unfold_more' : 'unfold_less'
+            requestAnimationFrame(() => requestAnimationFrame(() => this.atualizarPreview()))
+        });
+
+        // ── Print mobile ──────────────────────────────────────
+        document.getElementById("imp-btn-print-mobile").addEventListener("click", () => {
+            window.print();
         });
 
         // ── Controles ─────────────────────────────────────────
