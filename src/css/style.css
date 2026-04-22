@@ -1,3 +1,22 @@
+/* ─── Print reset ───────────────────────────────────────── */
+@media print {
+    html, body {
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    #m-main {
+        position: static !important;
+        overflow: visible !important;
+        display: block !important;
+    }
+}
+
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar { display: none; }
 

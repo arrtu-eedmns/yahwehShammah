@@ -11,6 +11,7 @@ MPSO.newView({
         colunas: 1,
         repeticoes: 1,
         orientacao: "retrato", // "retrato" | "paisagem"
+        cores: false,
     },
 
     // ─── Pegar letras do localStorage ────────────────────────
@@ -40,9 +41,20 @@ MPSO.newView({
         const blocos = letra.trim().split(/\n\s*\n/);
         return blocos.map((bloco, i) => {
             const marcadores = [...bloco.matchAll(/\[([^\]]+)\]/g)].map(m => m[1]);
-            const tipo = marcadores.map(m => this.normalizarMarcador(m)).includes("solo") ||
-                         marcadores.map(m => this.normalizarMarcador(m)).includes("s")
-                         ? "solo" : "dpto";
+            const norm = marcadores.map(m => this.normalizarMarcador(m));
+
+            // prioridade: ministracao > solo > masculino > feminino > dpto
+            let tipo;
+            if (norm.some(n => ['ministracao', 'min'].includes(n)))
+                tipo = 'ministracao';
+            else if (norm.some(n => ['solo', 's'].includes(n)))
+                tipo = 'solo';
+            else if (norm.some(n => ['masculino', 'masc', 'homens', 'homen'].includes(n)))
+                tipo = 'masculino';
+            else if (norm.some(n => ['feminino', 'fem', 'mulheres', 'mulher'].includes(n)))
+                tipo = 'feminino';
+            else
+                tipo = 'dpto';
 
             const header = marcadores.length
                 ? `[${i + 1}] ${marcadores.join(" ")}`
@@ -69,7 +81,7 @@ MPSO.newView({
             document.head.appendChild(style);
         }
         const size = this.state.orientacao === "paisagem" ? "A4 landscape" : "A4 portrait";
-        style.textContent = `@page { size: ${size}; margin: 15mm; }`;
+        style.textContent = `@page { size: ${size}; margin: 5mm; }`;
     },
 
     // ─── Atualizar preview ────────────────────────────────────
@@ -103,6 +115,7 @@ MPSO.newView({
         const pagina = document.createElement("div");
         pagina.id = "imp-pagina";
         pagina.className = `imp-pagina${orientacao === "paisagem" ? " paisagem" : ""}`;
+        pagina.dataset.colors = this.state.cores ? 'true' : 'false';
 
         for (let i = 0; i < repeticoes; i++) {
             const copia = document.createElement("div");
@@ -112,6 +125,104 @@ MPSO.newView({
         }
 
         preview.appendChild(pagina);
+
+        // ── Escala mobile + detecção de overflow ──────────────
+        requestAnimationFrame(() => {
+            // overflow
+            pagina.dataset.overflow = pagina.scrollHeight > pagina.clientHeight + 2 ? 'true' : 'false'
+
+            // zoom mobile
+            const area = document.getElementById('imp-area')
+            if (!area || area.clientWidth >= 769) return
+            const pxPerMm     = 3.7795275591
+            const pageW       = (orientacao === 'paisagem' ? 297 : 210) * pxPerMm
+            const pageH       = (orientacao === 'paisagem' ? 210 : 297) * pxPerMm
+            const availW      = area.clientWidth  - 16
+            const availH      = area.clientHeight - 16
+            const scale       = Math.min(1, availW / pageW, availH / pageH)
+            pagina.style.zoom = scale
+        })
+    },
+
+    // ─── Auto-calcular fonte + colunas ───────────────────────
+    async autoCalc() {
+        if (!this.state.letraSelecionada) return
+
+        const btn = document.getElementById('imp-btn-auto')
+        if (btn) { btn.classList.add('piece-disabled'); btn.$('.piece-icon').textContent = 'hourglass_empty' }
+
+        const ratio = this.state.fonteTitle / Math.max(this.state.fonteVerso, 1)
+        let bestVerso = 8, bestColunas = 1
+
+        // força 1 repetição para calcular fonte/colunas
+        this.state.repeticoes = 1
+        document.getElementById('imp-reps-val').textContent = 1
+
+        // itera colunas do mínimo ao máximo: para na primeira que cabe
+        for (let cols = 1; cols <= 6; cols++) {
+            this.state.colunas = cols
+            this.atualizarPreview()   // reconstrói DOM com novas colunas
+            await new Promise(r => requestAnimationFrame(r))
+
+            const pagina = document.getElementById('imp-pagina')
+            if (!pagina) break
+
+            // testa se fonte mínima (8px) já não cabe → tenta mais colunas
+            document.documentElement.style.setProperty('--imp-fonte-verso', 8)
+            document.documentElement.style.setProperty('--imp-fonte-titulo', Math.round(8 * ratio))
+            await new Promise(r => requestAnimationFrame(r))
+
+            if (pagina.scrollHeight > pagina.clientHeight + 2) continue
+
+            // busca binária: maior fonte que cabe nestas colunas
+            let lo = 8, hi = 32, best = 8
+            while (lo <= hi) {
+                const mid = Math.floor((lo + hi) / 2)
+                document.documentElement.style.setProperty('--imp-fonte-verso', mid)
+                document.documentElement.style.setProperty('--imp-fonte-titulo', Math.round(mid * ratio))
+                await new Promise(r => requestAnimationFrame(r))
+                if (pagina.scrollHeight <= pagina.clientHeight + 2) { best = mid; lo = mid + 1 }
+                else hi = mid - 1
+            }
+
+            bestVerso = best
+            bestColunas = cols
+            break   // mínimas colunas com a melhor fonte
+        }
+
+        // aplica resultado
+        const bestTitle = Math.round(bestVerso * ratio)
+        this.state.fonteVerso  = bestVerso
+        this.state.fonteTitle  = bestTitle
+        this.state.colunas     = bestColunas
+        document.documentElement.style.setProperty('--imp-fonte-verso',  bestVerso)
+        document.documentElement.style.setProperty('--imp-fonte-titulo', bestTitle)
+        document.documentElement.style.setProperty('--imp-colunas',      bestColunas)
+        document.getElementById('imp-val-verso').textContent   = bestVerso
+        document.getElementById('imp-val-titulo').textContent  = bestTitle
+        document.getElementById('imp-colunas-val').textContent = bestColunas
+        document.getElementById('imp-range-verso').value  = bestVerso
+        document.getElementById('imp-range-titulo').value = bestTitle
+
+        // tenta encaixar mais repetições
+        for (let r = 2; r <= 8; r++) {
+            this.state.repeticoes = r
+            this.atualizarPreview()
+            await new Promise(r2 => requestAnimationFrame(r2))
+            const p = document.getElementById('imp-pagina')
+            if (!p || p.scrollHeight > p.clientHeight + 2) {
+                this.state.repeticoes = r - 1
+                document.getElementById('imp-reps-val').textContent = r - 1
+                this.atualizarPreview()
+                break
+            }
+            document.getElementById('imp-reps-val').textContent = r
+        }
+
+        if (btn) { btn.classList.remove('piece-disabled'); btn.$('.piece-icon').textContent = 'auto_fix_high' }
+        await new Promise(r => requestAnimationFrame(r))
+        const p2 = document.getElementById('imp-pagina')
+        if (p2) p2.dataset.overflow = p2.scrollHeight > p2.clientHeight + 2 ? 'true' : 'false'
     },
 
     // ─── Main ─────────────────────────────────────────────────
@@ -119,23 +230,33 @@ MPSO.newView({
         const viewId = `view-${this.normalize(this.name)}`;
         const view = $(`#${viewId}`);
 
+        // reset state a cada abertura
+        Object.assign(this.state, {
+            letraSelecionada: null, fonteTitle: 16, fonteVerso: 12,
+            colunas: 1, repeticoes: 1, orientacao: 'retrato', cores: false
+        });
+
         view.innerHTML = `
             <style>
                 #view-imprimir {
                     display: grid;
-                    grid-template-columns: 280px 1px 1fr;
                     overflow: hidden;
+                    /* desktop: lista | divider | area  (2 linhas: lista+ctrl | area) */
+                    grid-template-columns: 280px 1px 1fr;
+                    grid-template-rows: 1fr auto;
+                    grid-template-areas:
+                        "lista vdiv area"
+                        "ctrl  vdiv area";
 
-                    @media (max-width: 768px) {
-                        grid-template-columns: 1fr;
-                        grid-template-rows: auto 1px 1fr;
-                    }
-
-                    #imp-painel {
-                        display: grid;
-                        grid-template-rows: 1fr auto;
+                    #imp-lista-wrap {
+                        grid-area: lista;
                         overflow: hidden;
+                        display: grid;
                     }
+                    #imp-v-divider { grid-area: vdiv; }
+                    #imp-area      { grid-area: area; }
+                    #imp-controles { grid-area: ctrl; }
+                    #imp-back-btn  { display: none; }
 
                     #imp-lista {
                         overflow-y: auto;
@@ -153,22 +274,13 @@ MPSO.newView({
                             text-align: start;
                             * { pointer-events: none; }
                             .numero {
-                                width: 40px;
-                                height: 40px;
-                                display: grid;
-                                place-items: center;
+                                width: 40px; height: 40px;
+                                display: grid; place-items: center;
                                 border-radius: 12px;
-                                font-weight: 900;
-                                font-size: 13px;
+                                font-weight: 900; font-size: 13px;
                             }
-                            .nome {
-                                font-size: 12px;
-                                font-weight: 900;
-                            }
-                            .cantor {
-                                font-size: 11px;
-                                opacity: .6;
-                            }
+                            .nome   { font-size: 12px; font-weight: 900; }
+                            .cantor { font-size: 11px; opacity: .6; }
                         }
                     }
 
@@ -176,6 +288,7 @@ MPSO.newView({
                         display: grid;
                         gap: 12px;
                         padding: 16px;
+                        overflow-y: auto;
                         border-top: 1px solid rgba(128,128,128,.12);
 
                         .ctrl-linha {
@@ -183,28 +296,18 @@ MPSO.newView({
                             grid-template-columns: 1fr auto;
                             align-items: center;
                             gap: 8px;
-                            font-size: 12px;
-                            font-weight: 700;
+                            font-size: 12px; font-weight: 700;
                         }
-
                         input[type=range] { width: 100%; }
                         input[type=number] {
-                            width: 56px;
-                            text-align: center;
-                            padding: 4px;
-                            border-radius: 8px;
-                            border: 1px solid rgba(128,128,128,.2);
-                            background: transparent;
-                            color: inherit;
-                            font-weight: 700;
+                            width: 56px; text-align: center; padding: 4px;
+                            border-radius: 8px; border: 1px solid rgba(128,128,128,.2);
+                            background: transparent; color: inherit; font-weight: 700;
                         }
                         select {
-                            padding: 4px 8px;
-                            border-radius: 8px;
+                            padding: 4px 8px; border-radius: 8px;
                             border: 1px solid rgba(128,128,128,.2);
-                            background: transparent;
-                            color: inherit;
-                            font-size: 12px;
+                            background: transparent; color: inherit; font-size: 12px;
                         }
                     }
 
@@ -215,142 +318,273 @@ MPSO.newView({
                         place-content: start center;
                     }
 
-                    .imp-pagina {
-                        background: white;
-                        color: #111;
-                        width: 210mm;
-                        min-height: 297mm;
-                        padding: 15mm;
-                        box-shadow: 0 4px 24px rgba(0,0,0,.18);
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 10mm;
+                    .imp-ctrl-header { display: none; }
+                    #imp-toggle-ctrl  { display: none; }
 
-                        &.paisagem {
-                            width: 297mm;
-                            min-height: 210mm;
+                    .imp-pagina {
+                        background: white; color: #111;
+                        width: 210mm; height: 297mm; overflow: hidden;
+                        padding: 5mm;
+                        box-shadow: 0 4px 24px rgba(0,0,0,.18);
+                        display: flex; flex-wrap: wrap; gap: 10mm;
+                        flex-shrink: 0;
+                        align-items: flex-start;
+                        align-content: flex-start;
+                        text-align: left;
+                        position: relative;
+                        &.paisagem { width: 297mm; height: 210mm; }
+
+                        /* gradiente vermelho quando texto não cabe */
+                        &[data-overflow="true"] {
+                            outline: 2px solid #ef5350;
+                            outline-offset: -2px;
+                            &::after {
+                                content: '';
+                                position: absolute;
+                                bottom: 0; left: 0; right: 0;
+                                height: 12mm;
+                                background: linear-gradient(transparent, rgba(239,83,80,.35));
+                                pointer-events: none;
+                            }
                         }
                     }
 
+                    /* ── Stepper numérico ── */
+                    .num-stepper {
+                        display: flex; align-items: center; gap: 4px;
+                    }
+                    .step-val {
+                        width: 32px; text-align: center;
+                        font-weight: 700; font-size: 12px;
+                    }
+                    .step-btn {
+                        width: 28px; height: 28px; border-radius: 8px;
+                        border: 1px solid rgba(128,128,128,.2);
+                        background: transparent; color: inherit;
+                        cursor: pointer; display: grid; place-items: center;
+                        font-size: 16px; line-height: 1;
+                        span { font-size: 16px; }
+                    }
                     .imp-copia {
                         flex: 1;
                         column-count: var(--imp-colunas, 1);
                         column-gap: 6mm;
                         font-family: 'Courier New', monospace;
                     }
-
                     .imp-copia i {
-                        display: block;
-                        width: 100%;
-                        column-span: all;
-                        font-weight: 900;
-                        font-style: normal;
+                        display: block; width: 100%; column-span: all;
+                        font-weight: 900; font-style: normal;
                         font-size: calc(var(--imp-fonte-titulo, 16) * 1px);
                         margin-bottom: 8px;
                     }
-
                     .bloco {
-                        break-inside: avoid;
-                        margin-bottom: 10px;
-                        h3 {
-                            font-size: calc(var(--imp-fonte-titulo, 16) * 1px);
-                            margin: 0 0 2px;
-                        }
-                        p {
-                            font-size: calc(var(--imp-fonte-verso, 12) * 1px);
-                            margin: 0;
-                            line-height: 1.4;
-                        }
+                        break-inside: avoid; margin-bottom: 10px;
+                        text-align: left;
+                        h3 { font-size: calc(var(--imp-fonte-titulo, 16) * 1px); margin: 0 0 2px; text-align: left; }
+                        p  { font-size: calc(var(--imp-fonte-verso, 12) * 1px); margin: 0; line-height: 1.4; text-align: left; }
+                    }
+                    .bloco.solo p { text-decoration: underline; }
+
+                    /* ── Cores de texto por tipo de bloco ── */
+                    .imp-pagina[data-colors="true"] {
+                        .bloco        { h3, p { color: #555; } }
+                        .bloco.dpto        { h3, p { color: hsl(261, 55%, 40%); } }
+                        .bloco.solo        { h3, p { color: hsl(48,  80%, 30%); } }
+                        .bloco.masculino   { h3, p { color: hsl(180, 55%, 30%); } }
+                        .bloco.feminino    { h3, p { color: hsl(300, 50%, 40%); } }
+                        .bloco.ministracao { h3, p { color: hsl(100, 50%, 30%); } }
+                    }
+                }
+
+                /* ── Mobile ── */
+                @container corpo (max-width: 768px) {
+                    #view-imprimir {
+                        grid-template-columns: 1fr;
+                        grid-template-rows: 1fr;
+                        grid-template-areas: "lista";
+                    }
+                    #view-imprimir #imp-v-divider,
+                    #view-imprimir #imp-area,
+                    #view-imprimir #imp-controles { display: none; }
+
+                    /* detalhe aberto */
+                    #view-imprimir.imp-mobile-detail {
+                        grid-template-rows: 1fr auto;
+                        grid-template-areas: "area" "ctrl";
+                    }
+                    #view-imprimir.imp-mobile-detail #imp-lista-wrap { display: none; }
+                    #view-imprimir.imp-mobile-detail #imp-area      { display: grid; }
+                    #view-imprimir.imp-mobile-detail #imp-controles { display: grid; }
+
+                    /* header de controles mobile: back + toggle */
+                    .imp-ctrl-header {
+                        display: grid;
+                        grid-template-columns: auto 1fr auto;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    #imp-toggle-ctrl { display: flex; }
+
+                    /* área: centraliza a folha */
+                    #view-imprimir #imp-area {
+                        padding: 8px;
+                        align-items: center;
+                        justify-items: center;
+                        place-content: center;
                     }
 
-                    .bloco.solo p { text-decoration: underline; }
+                    /* ocultar controles → só header fica visível */
+                    #view-imprimir.imp-hide-ctrl #imp-controles > *:not(.imp-ctrl-header) {
+                        display: none !important;
+                    }
+                    #view-imprimir.imp-hide-ctrl #imp-controles {
+                        padding: 8px 16px;
+                        gap: 0;
+                    }
                 }
 
-                @page {
-                    margin: 15mm;
-                    size: A4 portrait;
-                }
+                /* @page size é controlado dinamicamente por atualizarPageSize() */
+                @page { margin: 5mm; }
 
                 @media print {
                     body > *:not(#m-main) { display: none !important; }
                     #m-main { display: block !important; overflow: visible !important; }
                     #view-imprimir { display: block !important; }
                     #view-imprimir > *:not(#imp-area) { display: none !important; }
-                    #imp-area {
-                        overflow: visible !important;
-                        padding: 0 !important;
-                        display: block !important;
-                    }
+                    #imp-area { overflow: visible !important; padding: 0 !important; display: block !important; }
                     .imp-pagina {
-                        box-shadow: none !important;
-                        page-break-after: always;
-                        width: 100% !important;
-                        min-height: unset !important;
-                        padding: 0 !important;
+                        box-shadow: none !important; page-break-after: always;
+                        width: 100% !important; height: auto !important;
+                        min-height: 0 !important; overflow: visible !important;
+                        padding: 0 !important; zoom: 1 !important;
                     }
-                    .imp-pagina.paisagem ~ * { }
                 }
             </style>
 
-            <!-- Painel esquerdo: lista + controles -->
-            <div id="imp-painel" class="piece-surface background-color-auto-02">
-
-                <!-- Lista de letras -->
+            <!-- Lista -->
+            <div id="imp-lista-wrap" class="piece-surface background-color-auto-02">
                 <ul id="imp-lista" class="piece-surface background-color-auto-06"></ul>
-
-                <!-- Controles -->
-                <div id="imp-controles" class="piece-surface background-color-auto-02">
-
-                    <div class="ctrl-linha">
-                        <span>Título (px)</span>
-                        <span id="imp-val-titulo">16</span>
-                    </div>
-                    <input type="range" id="imp-range-titulo" min="10" max="32" value="16">
-
-                    <div class="ctrl-linha">
-                        <span>Verso (px)</span>
-                        <span id="imp-val-verso">12</span>
-                    </div>
-                    <input type="range" id="imp-range-verso" min="8" max="24" value="12">
-
-                    <div class="ctrl-linha">
-                        <span>Colunas</span>
-                        <input type="number" id="imp-num-colunas" min="1" max="6" value="1">
-                    </div>
-
-                    <div class="ctrl-linha">
-                        <span>Repetições</span>
-                        <input type="number" id="imp-num-reps" min="1" max="8" value="1">
-                    </div>
-
-                    <div class="ctrl-linha">
-                        <span>Orientação</span>
-                        <select id="imp-sel-orientacao">
-                            <option value="retrato">Retrato</option>
-                            <option value="paisagem">Paisagem</option>
-                        </select>
-                    </div>
-
-                    <button
-                        id="imp-btn-imprimir"
-                        class="piece-button piece-medium piece-surface piece-s-40
-                               piece-primary background-color-auto-11
-                               background-color-auto-12-hover text-color-auto-00
-                               ripple-color-auto-00"
-                    >
-                        <span class="material-symbols-rounded piece-icon" translate="no">print</span>
-                        <span class="piece-label">Imprimir</span>
-                        <span class="piece-ripple"></span>
-                    </button>
-                </div>
             </div>
 
-            <!-- Divider -->
-            <div class="piece-divider piece-surface background-color-auto-06"></div>
+            <!-- Divider vertical (desktop) -->
+            <div id="imp-v-divider" class="piece-divider piece-surface background-color-auto-06"></div>
 
             <!-- Área de preview -->
             <div id="imp-area" class="piece-surface background-color-auto-04">
                 <div id="imp-preview"></div>
+            </div>
+
+            <!-- Controles -->
+            <div id="imp-controles" class="piece-surface background-color-auto-02">
+
+                <!-- header mobile: voltar + toggle -->
+                <div class="imp-ctrl-header">
+                    <button id="imp-back-btn" class="
+                        piece-icon-button piece-small piece-surface
+                        background-color-auto-04 background-color-auto-06-hover
+                        text-color-auto-20 ripple-color-auto-00
+                    ">
+                        <span class="material-symbols-rounded piece-icon" translate="no">arrow_back</span>
+                        <span class="piece-ripple"></span>
+                    </button>
+                    <span></span>
+                    <button id="imp-toggle-ctrl" class="
+                        piece-icon-button piece-small piece-surface
+                        background-color-auto-04 background-color-auto-06-hover
+                        text-color-auto-20 ripple-color-auto-00
+                    ">
+                        <span class="material-symbols-rounded piece-icon" translate="no">keyboard_arrow_down</span>
+                        <span class="piece-ripple"></span>
+                    </button>
+                </div>
+
+                <div class="ctrl-linha">
+                    <span>Título (px)</span>
+                    <span id="imp-val-titulo">16</span>
+                </div>
+                <input type="range" id="imp-range-titulo" min="10" max="32" value="16">
+
+                <div class="ctrl-linha">
+                    <span>Verso (px)</span>
+                    <span id="imp-val-verso">12</span>
+                </div>
+                <input type="range" id="imp-range-verso" min="8" max="24" value="12">
+
+                <div class="ctrl-linha">
+                    <span>Colunas</span>
+                    <div class="num-stepper">
+                        <button class="step-btn" data-target="colunas" data-delta="-1">
+                            <span class="material-symbols-rounded">remove</span>
+                        </button>
+                        <span id="imp-colunas-val" class="step-val">1</span>
+                        <button class="step-btn" data-target="colunas" data-delta="1">
+                            <span class="material-symbols-rounded">add</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ctrl-linha">
+                    <span>Repetições</span>
+                    <div class="num-stepper">
+                        <button class="step-btn" data-target="repeticoes" data-delta="-1">
+                            <span class="material-symbols-rounded">remove</span>
+                        </button>
+                        <span id="imp-reps-val" class="step-val">1</span>
+                        <button class="step-btn" data-target="repeticoes" data-delta="1">
+                            <span class="material-symbols-rounded">add</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ctrl-linha">
+                    <span>Orientação</span>
+                    <select id="imp-sel-orientacao">
+                        <option value="retrato">Retrato</option>
+                        <option value="paisagem">Paisagem</option>
+                    </select>
+                </div>
+
+                <label class="
+                    piece-surface background-color-auto-02 piece-s-40
+                    ripple-color-inverse-00
+                " style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:8px 12px;border-radius:40px;cursor:pointer;font-size:12px;font-weight:700;">
+                    <span>Habilitar cores</span>
+                    <div class="
+                        piece-switch piece-surface piece-s-40
+                        background-color-auto-04 background-color-auto-11-active
+                        border-color-auto-08 border-color-auto-11-active
+                        text-color-light-00 text-color-light-11-active
+                        piece-primary
+                    ">
+                        <input type="checkbox" id="imp-chk-cores" class="piece-controller">
+                        <span class="piece-indicator piece-surface piece-parent
+                            background-color-auto-12 background-color-auto-00-active">
+                            <span class="material-symbols-rounded piece-icon piece-true" translate="no">check</span>
+                        </span>
+                    </div>
+                    <span class="piece-ripple"></span>
+                </label>
+
+                <button id="imp-btn-auto" class="
+                    piece-button piece-medium piece-surface piece-s-40
+                    background-color-auto-04 background-color-auto-05-hover
+                    text-color-auto-20 ripple-color-auto-00
+                ">
+                    <span class="material-symbols-rounded piece-icon" translate="no">auto_fix_high</span>
+                    <span class="piece-label">Auto-calcular</span>
+                    <span class="piece-ripple"></span>
+                </button>
+
+                <button id="imp-btn-imprimir" class="
+                    piece-button piece-medium piece-surface piece-s-40
+                    piece-primary background-color-auto-11
+                    background-color-auto-12-hover text-color-auto-00
+                    ripple-color-auto-00
+                ">
+                    <span class="material-symbols-rounded piece-icon" translate="no">print</span>
+                    <span class="piece-label">Imprimir</span>
+                    <span class="piece-ripple"></span>
+                </button>
             </div>
         `;
 
@@ -378,7 +612,6 @@ MPSO.newView({
                 `)[0];
 
                 item.addEventListener("click", () => {
-                    // Marca como selecionado
                     lista.$$(".card-list").forEach(el => el.classList.remove(
                         "background-color-auto-11", "text-color-auto-00"
                     ));
@@ -386,11 +619,26 @@ MPSO.newView({
 
                     this.state.letraSelecionada = letra;
                     this.atualizarPreview();
+                    view.classList.add('imp-mobile-detail');
                 });
 
                 lista.appendChild(item);
             });
         }
+
+        // ── Back button (mobile) ──────────────────────────────
+        document.getElementById("imp-back-btn").addEventListener("click", () => {
+            view.classList.remove('imp-mobile-detail', 'imp-hide-ctrl');
+        });
+
+        // ── Toggle controles (mobile) ─────────────────────────
+        document.getElementById("imp-toggle-ctrl").addEventListener("click", () => {
+            const hidden = view.classList.toggle('imp-hide-ctrl')
+            document.querySelector('#imp-toggle-ctrl .material-symbols-rounded').textContent =
+                hidden ? 'keyboard_arrow_up' : 'keyboard_arrow_down'
+            // recalcula zoom com área maior/menor
+            setTimeout(() => this.atualizarPreview(), 50)
+        });
 
         // ── Controles ─────────────────────────────────────────
         const self = this;
@@ -407,14 +655,21 @@ MPSO.newView({
             self.atualizarPreview();
         });
 
-        document.getElementById("imp-num-colunas").addEventListener("input", e => {
-            self.state.colunas = Number(e.target.value);
-            self.atualizarPreview();
-        });
-
-        document.getElementById("imp-num-reps").addEventListener("input", e => {
-            self.state.repeticoes = Number(e.target.value);
-            self.atualizarPreview();
+        // ── Steppers ──────────────────────────────────────────
+        const stepCfg = {
+            colunas:    { min: 1, max: 6, valId: 'imp-colunas-val' },
+            repeticoes: { min: 1, max: 8, valId: 'imp-reps-val'   },
+        }
+        view.$$('.step-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key   = btn.dataset.target
+                const delta = parseInt(btn.dataset.delta)
+                const cfg   = stepCfg[key]
+                if (!cfg) return
+                self.state[key] = Math.max(cfg.min, Math.min(cfg.max, self.state[key] + delta))
+                document.getElementById(cfg.valId).textContent = self.state[key]
+                self.atualizarPreview()
+            })
         });
 
         document.getElementById("imp-sel-orientacao").addEventListener("change", e => {
@@ -422,8 +677,18 @@ MPSO.newView({
             self.atualizarPreview();
         });
 
+        document.getElementById("imp-btn-auto").addEventListener("click", () => {
+            self.autoCalc();
+        });
+
         document.getElementById("imp-btn-imprimir").addEventListener("click", () => {
             window.print();
+        });
+
+        // ── Cores ─────────────────────────────────────────────
+        document.getElementById("imp-chk-cores").addEventListener("change", e => {
+            self.state.cores = e.target.checked;
+            self.atualizarPreview();
         });
 
         // Preview inicial
