@@ -1,16 +1,3 @@
-// ─── Carregar módulo CRUD (se importado) ───────────────────
-;(() => {
-    const crudModule = localStorage.getItem('crud-module')
-    if (!crudModule) return
-    try {
-        const script = document.createElement('script')
-        script.textContent = crudModule
-        document.head.appendChild(script)
-    } catch(e) {
-        console.warn('⚠️ Erro ao carregar módulo CRUD:', e)
-    }
-})()
-
 // ─── Configurações sempre por último ───────────────────────
 ;(() => {
     const idx = MPSO.views.findIndex(v => v.name === "Configurações")

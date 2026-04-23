@@ -162,7 +162,7 @@ MPSO.newView({
 
     // ── View de Impressão ────────────────────────────────────
     initPrintViewToggle(container) {
-        const hasCrud   = !!localStorage.getItem('crud-module')
+        const hasCrud   = !!localStorage.getItem('crud-key')
         const isEnabled = hasCrud || localStorage.getItem('print-view') === 'true'
 
         const [el] = this.create(/*html*/`
@@ -175,7 +175,7 @@ MPSO.newView({
                 " style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;padding:16px;border-radius:40px;cursor:pointer;">
                     <div>
                         <p style="font-weight:500;">View de Impressão</p>
-                        ${hasCrud ? '<p style="font-size:11px;opacity:.5;margin-top:2px;">Ativada pelo módulo CRUD</p>' : ''}
+                        ${hasCrud ? '<p style="font-size:11px;opacity:.5;margin-top:2px;">Ativada pela chave CRUD</p>' : ''}
                     </div>
                     <div class="
                         piece-switch piece-surface piece-s-40
@@ -208,82 +208,77 @@ MPSO.newView({
         })
     },
 
-    // ── Módulo CRUD ──────────────────────────────────────────
+    // ── Chave de acesso CRUD ─────────────────────────────────
     initCrudModule(container) {
-        const hasModule = !!localStorage.getItem('crud-module')
+        const hasKey = !!localStorage.getItem('crud-key')
 
-        container.appendAll(this.create(/*html*/`
+        const [el] = this.create(/*html*/`
             <div class="piece-surface background-color-auto-04" style="padding:16px;border-radius:16px;display:grid;gap:12px;">
-                <h1 style="font-size:20px;font-weight:900;">Módulo CRUD</h1>
+                <h1 style="font-size:20px;font-weight:900;">Acesso CRUD</h1>
 
                 <div class="piece-surface background-color-auto-02" style="padding:12px 16px;border-radius:12px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px;">
-                    <span class="material-symbols-rounded" style="font-size:20px;color:${hasModule ? 'green' : 'gray'};">
-                        ${hasModule ? 'check_circle' : 'unpublished'}
+                    <span class="material-symbols-rounded" style="font-size:20px;color:${hasKey ? 'green' : 'gray'};">
+                        ${hasKey ? 'lock_open' : 'lock'}
                     </span>
                     <span style="font-size:14px;font-weight:500;opacity:.8;">
-                        ${hasModule ? 'Módulo importado' : 'Nenhum módulo importado'}
+                        ${hasKey ? 'Chave ativa' : 'Sem chave de acesso'}
                     </span>
                 </div>
 
-                <label id="crud-import-btn" class="
-                    piece-button piece-medium
-                    piece-surface
-                    background-color-auto-04
-                    background-color-auto-05-hover
-                    text-color-auto-20
-                    ripple-color-auto-00
-                " style="cursor:pointer;">
-                    <input type="file" accept=".js" style="display:none;">
-                    <span class="material-symbols-rounded piece-icon" translate="no">upload_file</span>
-                    <span class="piece-label">${hasModule ? 'Substituir crud.js' : 'Importar crud.js'}</span>
-                    <span class="piece-ripple"></span>
-                </label>
-
-                ${hasModule ? `
-                <button id="crud-remove-btn" class="
-                    piece-button piece-medium
-                    piece-surface
-                    background-color-auto-04
-                    background-color-auto-05-hover
-                    text-color-auto-20
-                    ripple-color-auto-00
+                ${!hasKey ? `
+                <div style="display:grid;gap:8px;">
+                    <input
+                        id="crud-key-input"
+                        type="password"
+                        placeholder="Cole a chave de acesso aqui"
+                        autocomplete="off"
+                        style="
+                            padding:10px 14px;border-radius:12px;
+                            border:1px solid rgba(128,128,128,.25);
+                            background:transparent;color:inherit;
+                            font-size:13px;font-family:monospace;
+                            width:100%;
+                        "
+                    >
+                    <button id="crud-key-save" class="
+                        piece-button piece-medium piece-surface
+                        background-color-auto-13 background-color-auto-14-hover
+                        text-color-auto-00 ripple-color-auto-00
+                    ">
+                        <span class="material-symbols-rounded piece-icon" translate="no">key</span>
+                        <span class="piece-label">Ativar chave</span>
+                        <span class="piece-ripple"></span>
+                    </button>
+                </div>` : `
+                <button id="crud-key-remove" class="
+                    piece-button piece-medium piece-surface
+                    background-color-auto-04 background-color-auto-05-hover
+                    text-color-auto-20 ripple-color-auto-00
                 ">
-                    <span class="material-symbols-rounded piece-icon" translate="no">delete</span>
-                    <span class="piece-label">Remover módulo</span>
+                    <span class="material-symbols-rounded piece-icon" translate="no">lock</span>
+                    <span class="piece-label">Remover acesso</span>
                     <span class="piece-ripple"></span>
-                </button>` : ''}
+                </button>`}
             </div>
-        `))
+        `)
+        container.append(el)
 
-        // Importar arquivo
-        const fileInput = container.$('#crud-import-btn input[type="file"]')
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0]
-            if (!file) return
+        // Salvar chave
+        const saveBtn = container.$('#crud-key-save')
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const val = container.$('#crud-key-input')?.value.trim()
+                if (!val) { this.snackbar('⚠️ Cole a chave antes de ativar.'); return }
+                localStorage.setItem('crud-key', val)
+                location.reload()
+            })
+        }
 
-            const reader = new FileReader()
-            reader.onload = (ev) => {
-                try {
-                    const content = ev.target.result
-                    localStorage.setItem('crud-module', content)
-                    // executa imediatamente sem precisar recarregar
-                    const script = document.createElement('script')
-                    script.textContent = content
-                    document.head.appendChild(script)
-                    // recarrega a página para atualizar a navegação
-                    location.reload()
-                } catch(err) {
-                    console.warn('Erro ao importar módulo:', err)
-                }
-            }
-            reader.readAsText(file)
-        })
-
-        // Remover módulo
-        const removeBtn = container.$('#crud-remove-btn')
+        // Remover chave
+        const removeBtn = container.$('#crud-key-remove')
         if (removeBtn) {
             removeBtn.addEventListener('click', () => {
-                localStorage.removeItem('crud-module')
+                localStorage.removeItem('crud-key')
                 location.reload()
             })
         }
