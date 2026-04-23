@@ -61,65 +61,16 @@ function iniciarListenerAtualizacoes() {
 
         const localTime = parseInt(localStorage.getItem('letras-db-updated') || '0');
 
-        // Só mostra snackbar se o servidor tem dados mais novos
+        // Só notifica se o servidor tem dados mais novos
         // e o usuário já tem letras em cache (não é primeira abertura)
         if (serverTime > localTime && localStorage.getItem('letras-db')) {
-            mostrarSnackbarAtualizacao();
+            window._letrasUpdatePending = true;
+            window.dispatchEvent(new CustomEvent('letras-update-available'));
         }
     }, err => {
         // Offline ou sem permissão — silencioso, não quebra o app
         console.warn('⚠️ Listener meta/letras:', err.message);
     });
-}
-
-// ─── Snackbar de atualização disponível ─────────────────────
-function mostrarSnackbarAtualizacao() {
-    if (document.getElementById('snack-atualizar')) return; // evita duplicar
-
-    const snack = document.createElement('div');
-    snack.id = 'snack-atualizar';
-    snack.className = 'piece-surface background-color-auto-18 text-color-auto-02';
-    snack.style.cssText = `
-        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-        z-index: 9999; display: flex; align-items: center; gap: 12px;
-        padding: 12px 16px; border-radius: 16px; white-space: nowrap;
-        box-shadow: 0 4px 16px rgba(0,0,0,.25);
-        animation: snack-in .3s ease;
-        font-size: 13px; font-weight: 500;
-    `;
-    snack.innerHTML = `
-        <style>
-            @keyframes snack-in {
-                from { opacity:0; transform:translateX(-50%) translateY(12px); }
-                to   { opacity:1; transform:translateX(-50%) translateY(0); }
-            }
-        </style>
-        <span>Letras atualizadas disponíveis</span>
-        <button id="snack-sync-btn" style="
-            background:#f44336; color:#fff; border:none; border-radius:8px;
-            padding:6px 14px; font-size:12px; font-weight:700; cursor:pointer;
-        ">Sincronizar</button>
-        <button id="snack-dismiss-btn" style="
-            background:transparent; border:none; color:inherit; opacity:.5;
-            font-size:18px; cursor:pointer; line-height:1; padding:4px;
-        ">✕</button>
-    `;
-
-    document.body.appendChild(snack);
-
-    snack.querySelector('#snack-sync-btn').addEventListener('click', async () => {
-        snack.remove();
-        await carregarLetrasNoLocalStorage();
-        // Navega pra letras se não estiver lá
-        if (location.hash !== '#letras') location.hash = '#letras';
-    });
-
-    snack.querySelector('#snack-dismiss-btn').addEventListener('click', () => {
-        snack.remove();
-    });
-
-    // Remove sozinho após 10 segundos
-    setTimeout(() => snack?.remove(), 10_000);
 }
 
 // ─── Boot ────────────────────────────────────────────────────

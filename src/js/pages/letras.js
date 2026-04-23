@@ -18,12 +18,54 @@ MPSO.newView({
         return letras.find(f => f.numero == id) || null;
     },
 
+    // ─── Botão de atualização ────────────────────────────────
+    mostrarBotaoAtualizar() {
+        const aside = document.getElementById('letras-menu');
+        if (!aside || document.getElementById('btn-atualizar-letras')) return;
+
+        const [btn] = this.create(`
+            <button
+                id="btn-atualizar-letras"
+                data-offline="disable"
+                class="
+                    piece-button piece-medium piece-surface piece-s-40
+                    background-color-auto-13 background-color-auto-14-hover
+                    text-color-auto-00 ripple-color-auto-00
+                "
+                style="position:sticky;bottom:0;width:100%;border-radius:0;z-index:2;"
+            >
+                <span class="material-symbols-rounded piece-icon" translate="no">sync</span>
+                <span class="piece-label">Atualizar letras</span>
+                <span class="piece-ripple"></span>
+            </button>
+        `);
+
+        aside.appendChild(btn);
+
+        btn.addEventListener('click', async () => {
+            btn.classList.add('piece-disabled');
+            btn.$('.piece-icon').textContent = 'hourglass_empty';
+            await carregarLetrasNoLocalStorage();
+            window._letrasUpdatePending = false;
+            // Re-renderiza a lista com os dados novos
+            const view = $(`#view-${this.normalize(this.name)}`);
+            view.innerHTML = '';
+            this.main([]);
+        });
+    },
+
     main(params){
         const viewId = `view-${this.normalize(this.name)}`;
         let view = $(`#${viewId}`);
 
         let aside = view.$("aside");
         let detalhe = view.$("#letras-detalhe");
+
+        // Registra listener de update uma única vez
+        if (!this._updateListenerAdded) {
+            window.addEventListener('letras-update-available', () => this.mostrarBotaoAtualizar());
+            this._updateListenerAdded = true;
+        }
 
         if(!aside || !detalhe){
             view.innerHTML = `
@@ -82,6 +124,9 @@ MPSO.newView({
             aside = view.$("aside");
             detalhe = view.$("#letras-detalhe");
         }
+
+        // Se há update pendente (evento disparou antes desta tela abrir), mostra o botão
+        if (window._letrasUpdatePending) this.mostrarBotaoAtualizar();
 
         if(params.length){
             const btn = view.$(`button[value="${params[0]}"]`);
