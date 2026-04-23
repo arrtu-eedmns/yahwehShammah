@@ -247,25 +247,37 @@ function showShareButton() {
 
     const style = document.createElement('style');
     style.textContent = `
-        /* sem botão de instalar: posição baixa */
         #share_button {
             position: fixed;
             bottom: 16px;
             right: 16px;
             z-index: 10;
+            display: none; /* começa oculto — visibilidade controlada por JS */
         }
-        /* com botão de instalar: sobe pra não sobrepor */
-        body:has(#pwa-install-btn) #share_button {
-            bottom: 128px;
-        }
+        body:has(#pwa-install-btn) #share_button         { bottom: 128px; }
+        body:has(#btn-atualizar-letras) #share_button    { bottom: 64px;  }
+        body:has(#btn-atualizar-letras):has(#pwa-install-btn) #share_button { bottom: 176px; }
         @media screen and (max-width: 768px) {
-            #share_button { bottom: 80px; }
-            body:has(#pwa-install-btn) #share_button { bottom: 192px; }
+            #share_button                                                        { bottom: 80px;  }
+            body:has(#pwa-install-btn) #share_button                            { bottom: 192px; }
+            body:has(#btn-atualizar-letras) #share_button                       { bottom: 128px; }
+            body:has(#btn-atualizar-letras):has(#pwa-install-btn) #share_button { bottom: 240px; }
         }
     `;
 
     document.head.appendChild(style);
     document.body.appendChild(btn);
+
+    // Mostra só na lista de letras; some quando detalhe está aberto
+    function atualizarVisibilidade() {
+        const hash = location.hash;
+        const naLetras     = hash === '#letras' || hash === '' || hash === '#';
+        const detalheAberto = /^#letras\/.+/.test(hash);
+        btn.style.display = (naLetras && !detalheAberto) ? '' : 'none';
+    }
+
+    atualizarVisibilidade();
+    window.addEventListener('hashchange', atualizarVisibilidade);
 
     btn.addEventListener('click', async () => {
         try {

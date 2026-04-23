@@ -14,6 +14,15 @@ const db = firebase.firestore();
 // ─── Carregar letras no localStorage ────────────────────────
 async function carregarLetrasNoLocalStorage() {
     try {
+        // Guarda mapa das letras antigas para comparar depois (chave: nome|cantor)
+        const oldRaw = localStorage.getItem('letras-db');
+        const oldMap = {};
+        if (oldRaw) {
+            JSON.parse(oldRaw).forEach(l => {
+                oldMap[(l.nome + '|' + l.cantor).toLowerCase()] = l.letra;
+            });
+        }
+
         // Busca o timestamp do servidor para marcar a última sync
         const metaSnap = await db.collection('meta').doc('letras').get();
         const serverUpdatedAt = metaSnap.exists
@@ -39,8 +48,26 @@ async function carregarLetrasNoLocalStorage() {
         letras.forEach((letra, index) => letra.numero = index + 1);
 
         localStorage.setItem("letras-db", JSON.stringify(letras));
-        // Salva o timestamp da última sync para o listener comparar
         localStorage.setItem("letras-db-updated", String(serverUpdatedAt || Date.now()));
+
+        // ── Detecta letras novas ou modificadas ──────────────────
+        // Só faz a comparação se já havia dados anteriores (não é primeira carga)
+        if (oldRaw) {
+            const numerosAlterados = letras
+                .filter(l => {
+                    const key = (l.nome + '|' + l.cantor).toLowerCase();
+                    return !(key in oldMap) || oldMap[key] !== l.letra;
+                })
+                .map(l => l.numero);
+
+            if (numerosAlterados.length) {
+                // Merge com badges anteriores ainda não vistos
+                const existentes = JSON.parse(localStorage.getItem('letras-novas') || '[]');
+                const merged = [...new Set([...existentes, ...numerosAlterados])];
+                localStorage.setItem('letras-novas', JSON.stringify(merged));
+                window.dispatchEvent(new CustomEvent('letras-badges-atualizados'));
+            }
+        }
 
         console.log("✅ Letras carregadas:", letras.length);
     } catch(e) {

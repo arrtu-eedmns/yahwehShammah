@@ -18,6 +18,25 @@ MPSO.newView({
         return letras.find(f => f.numero == id) || null;
     },
 
+    // ─── Badges de letras novas/modificadas ─────────────────
+    aplicarBadges() {
+        const novas = JSON.parse(localStorage.getItem('letras-novas') || '[]');
+        novas.forEach(numero => {
+            const btn = document.querySelector(`#letras-menu button[value="${numero}"]`);
+            if (btn) btn.classList.add('letra-nova');
+        });
+    },
+
+    removerBadge(numero) {
+        const novas = JSON.parse(localStorage.getItem('letras-novas') || '[]');
+        const filtradas = novas.filter(n => n !== numero);
+        filtradas.length
+            ? localStorage.setItem('letras-novas', JSON.stringify(filtradas))
+            : localStorage.removeItem('letras-novas');
+        document.querySelector(`#letras-menu button[value="${numero}"]`)
+            ?.classList.remove('letra-nova');
+    },
+
     // ─── Botão de atualização ────────────────────────────────
     mostrarBotaoAtualizar() {
         const aside = document.getElementById('letras-menu');
@@ -61,9 +80,10 @@ MPSO.newView({
         let aside = view.$("aside");
         let detalhe = view.$("#letras-detalhe");
 
-        // Registra listener de update uma única vez
+        // Registra listeners uma única vez
         if (!this._updateListenerAdded) {
-            window.addEventListener('letras-update-available', () => this.mostrarBotaoAtualizar());
+            window.addEventListener('letras-update-available',   () => this.mostrarBotaoAtualizar());
+            window.addEventListener('letras-badges-atualizados', () => this.aplicarBadges());
             this._updateListenerAdded = true;
         }
 
@@ -112,17 +132,21 @@ MPSO.newView({
                     </button>
                 `);
     
-                // Ao clicar → atualiza o hash com o id
+                // Ao clicar → remove badge e abre letra
                 item[0].addEventListener("click", (e) => {
+                    this.removerBadge(letra.numero);
                     MPSO.lastClicked = e.currentTarget;
                     location.hash = `#letras/${letra.numero}`;
-                });                
-    
+                });
+
                 view.$("aside").append(...item);
             });
 
             aside = view.$("aside");
             detalhe = view.$("#letras-detalhe");
+
+            // Aplica badges nas letras novas/modificadas
+            this.aplicarBadges();
         }
 
         // Se há update pendente (evento disparou antes desta tela abrir), mostra o botão

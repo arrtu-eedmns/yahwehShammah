@@ -9,6 +9,21 @@
         display: grid;
         overflow-y: auto;
         gap: 1px;
+        /* ── Badge de letra nova/modificada ── */
+        .card-list.letra-nova .numero {
+            position: relative;
+            &::after {
+                content: '';
+                position: absolute;
+                top: 4px; right: 4px;
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background: #f44336;
+                outline: 2px solid transparent;
+                outline-offset: 1px;
+            }
+        }
+
         .card-list {
             display: grid;
             grid-template-columns: auto 1fr;
