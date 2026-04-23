@@ -53,18 +53,23 @@ async function carregarLetrasNoLocalStorage() {
         // ── Detecta letras novas ou modificadas ──────────────────
         // Só faz a comparação se já havia dados anteriores (não é primeira carga)
         if (oldRaw) {
-            const numerosAlterados = letras
+            const alteradas = letras
                 .filter(l => {
                     const key = (l.nome + '|' + l.cantor).toLowerCase();
                     return !(key in oldMap) || oldMap[key] !== l.letra;
                 })
-                .map(l => l.numero);
+                .map(l => {
+                    const key = (l.nome + '|' + l.cantor).toLowerCase();
+                    return { numero: l.numero, tipo: !(key in oldMap) ? 'novo' : 'atualizado' };
+                });
 
-            if (numerosAlterados.length) {
-                // Merge com badges anteriores ainda não vistos
+            if (alteradas.length) {
+                // Merge: atualiza entradas existentes ou adiciona novas
                 const existentes = JSON.parse(localStorage.getItem('letras-novas') || '[]');
-                const merged = [...new Set([...existentes, ...numerosAlterados])];
-                localStorage.setItem('letras-novas', JSON.stringify(merged));
+                const mapa = {};
+                existentes.forEach(e => mapa[e.numero] = e);
+                alteradas.forEach(a => mapa[a.numero] = a);
+                localStorage.setItem('letras-novas', JSON.stringify(Object.values(mapa)));
                 window.dispatchEvent(new CustomEvent('letras-badges-atualizados'));
             }
         }

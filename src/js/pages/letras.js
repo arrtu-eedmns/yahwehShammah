@@ -21,27 +21,33 @@ MPSO.newView({
     // ─── Badges de letras novas/modificadas ─────────────────
     aplicarBadges() {
         const novas = JSON.parse(localStorage.getItem('letras-novas') || '[]');
-        novas.forEach(numero => {
+        novas.forEach(({ numero, tipo }) => {
             const btn = document.querySelector(`#letras-menu button[value="${numero}"]`);
-            if (btn) btn.classList.add('letra-nova');
+            if (!btn || btn.querySelector('.badge-letra')) return;
+            const badge = document.createElement('span');
+            badge.className = 'badge-letra';
+            badge.textContent = tipo === 'novo' ? 'Novo' : 'Atualizado';
+            // insere antes do ripple (último filho)
+            btn.insertBefore(badge, btn.lastElementChild);
         });
     },
 
     removerBadge(numero) {
         const novas = JSON.parse(localStorage.getItem('letras-novas') || '[]');
-        const filtradas = novas.filter(n => n !== numero);
+        const filtradas = novas.filter(n => n.numero !== numero);
         filtradas.length
             ? localStorage.setItem('letras-novas', JSON.stringify(filtradas))
             : localStorage.removeItem('letras-novas');
-        document.querySelector(`#letras-menu button[value="${numero}"]`)
-            ?.classList.remove('letra-nova');
+        const btn = document.querySelector(`#letras-menu button[value="${numero}"]`);
+        btn?.querySelector('.badge-letra')?.remove();
     },
 
     // ─── Botão de atualização ────────────────────────────────
     mostrarBotaoAtualizar() {
-        const aside = document.getElementById('letras-menu');
-        if (!aside || document.getElementById('btn-atualizar-letras')) return;
+        const menu = document.getElementById('letras-menu');
+        if (!menu || document.getElementById('btn-atualizar-letras')) return;
 
+        // Insere no #letras-menu como terceira linha do grid (abaixo da lista)
         const [btn] = this.create(`
             <button
                 id="btn-atualizar-letras"
@@ -51,7 +57,7 @@ MPSO.newView({
                     background-color-auto-13 background-color-auto-14-hover
                     text-color-auto-00 ripple-color-auto-00
                 "
-                style="position:sticky;bottom:0;width:100%;border-radius:0;z-index:2;"
+                style="width:100%;border-radius:0;z-index:2;flex-shrink:0;"
             >
                 <span class="material-symbols-rounded piece-icon" translate="no">sync</span>
                 <span class="piece-label">Atualizar letras</span>
@@ -59,7 +65,7 @@ MPSO.newView({
             </button>
         `);
 
-        aside.appendChild(btn);
+        menu.appendChild(btn);
 
         btn.addEventListener('click', async () => {
             btn.classList.add('piece-disabled');
@@ -71,6 +77,56 @@ MPSO.newView({
             view.innerHTML = '';
             this.main([]);
         });
+    },
+
+    // ─── Utilitário: categorias de uma letra (migra festividade) ─
+    getCats(letra) {
+        return Array.isArray(letra.categorias) ? letra.categorias : [];
+    },
+
+    // ─── Filtro de categoria ──────────────────────────────────
+    aplicarFiltro(view, catAtiva) {
+        this._catAtiva = catAtiva;
+        // atualiza visual dos chips de filtro
+        view.$$('#letras-filtro .cat-filtro-chip').forEach(chip => {
+            const ativo = chip.dataset.cat === (catAtiva ?? '');
+            chip.classList.toggle('cat-filtro-chip-ativo', ativo);
+        });
+        // mostra/oculta cartas
+        view.$$('#letras-menu button[name="hino"]').forEach(btn => {
+            if (!catAtiva) { btn.style.display = ''; return; }
+            const cats = JSON.parse(btn.dataset.cats || '[]');
+            btn.style.display = cats.includes(catAtiva) ? '' : 'none';
+        });
+    },
+
+    renderFiltro(view, letras) {
+        const todas = new Set();
+        letras.forEach(l => this.getCats(l).forEach(c => todas.add(c)));
+        const cats = [...todas].sort();
+
+        if (!cats.length) return; // sem categorias → sem barra
+
+        const filtroEl = document.createElement('div');
+        filtroEl.id = 'letras-filtro';
+        filtroEl.className = 'piece-surface background-color-auto-06';
+
+        const criarChip = (label, cat) => {
+            const chip = document.createElement('button');
+            chip.className = 'cat-filtro-chip piece-surface background-color-auto-04 background-color-auto-06-hover text-color-auto-20';
+            chip.dataset.cat = cat ?? '';
+            chip.textContent = label;
+            if ((this._catAtiva ?? '') === (cat ?? '')) chip.classList.add('cat-filtro-chip-ativo');
+            chip.addEventListener('click', () => this.aplicarFiltro(view, cat));
+            return chip;
+        };
+
+        filtroEl.appendChild(criarChip('Todas', null));
+        cats.forEach(c => filtroEl.appendChild(criarChip(c, c)));
+
+        // Insere antes das cartas (após o aside já criado)
+        const aside = view.$('#letras-menu');
+        aside.prepend(filtroEl);
     },
 
     main(params){
@@ -89,10 +145,12 @@ MPSO.newView({
 
         if(!aside || !detalhe){
             view.innerHTML = `
-                <aside id="letras-menu" class="piece-surface background-color-auto-06"></aside>
+                <aside id="letras-menu" class="piece-surface background-color-auto-06">
+                    <div class="letras-lista"></div>
+                </aside>
                 <div id="letras-detalhe"></div>
             `;
-            
+
             let letras = localStorage.getItem("letras-db");
             if (!letras) {
                 view.innerHTML = "<p style='padding:16px;opacity:.5;'>Nenhuma letra encontrada. Sincronize em Configurações.</p>";
@@ -106,12 +164,20 @@ MPSO.newView({
                 view.innerHTML = "<p style='padding:16px;opacity:.5;'>Erro ao carregar letras.</p>";
                 return;
             }
-    
+
+            const lista = view.$('.letras-lista');
+
             letras.forEach((letra) => {
+                const cats = this.getCats(letra);
+                const chipsHtml = cats.map(c =>
+                    `<span class="cat-chip piece-surface background-color-auto-05 text-color-auto-18">${c}</span>`
+                ).join('');
+
                 const item = this.create(`
                     <button
                         name="hino"
                         value="${letra.numero}"
+                        data-cats='${JSON.stringify(cats)}'
                         class="
                             card-list
                             piece-surface
@@ -127,11 +193,12 @@ MPSO.newView({
                         <div>
                             <p class="nome">${letra.nome}</p>
                             <p class="cantor">${letra.cantor}</p>
+                            ${chipsHtml ? `<div class="cat-chips">${chipsHtml}</div>` : ''}
                         </div>
                         <span class="piece-ripple"></span>
                     </button>
                 `);
-    
+
                 // Ao clicar → remove badge e abre letra
                 item[0].addEventListener("click", (e) => {
                     this.removerBadge(letra.numero);
@@ -139,14 +206,20 @@ MPSO.newView({
                     location.hash = `#letras/${letra.numero}`;
                 });
 
-                view.$("aside").append(...item);
+                lista.append(...item);
             });
+
+            // Barra de filtro por categoria
+            this.renderFiltro(view, letras);
 
             aside = view.$("aside");
             detalhe = view.$("#letras-detalhe");
 
             // Aplica badges nas letras novas/modificadas
             this.aplicarBadges();
+
+            // Reaplica filtro ativo (se houver) após recriar a lista
+            if (this._catAtiva !== undefined) this.aplicarFiltro(view, this._catAtiva);
         }
 
         // Se há update pendente (evento disparou antes desta tela abrir), mostra o botão
@@ -156,10 +229,10 @@ MPSO.newView({
             const btn = view.$(`button[value="${params[0]}"]`);
             if (btn) {
                 MPSO.lastClicked = btn;
-        
+
                 const rect = btn.getBoundingClientRect();
                 const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-        
+
                 if (!isVisible) {
                     btn.scrollIntoView({
                         behavior: "smooth",
@@ -167,11 +240,11 @@ MPSO.newView({
                     });
                 }
             }
-        
+
             this.abrirLetra(params[0]);
         } else {
             this.fecharLetra();
-        }     
+        }
     },
 
     abrirLetra(id){

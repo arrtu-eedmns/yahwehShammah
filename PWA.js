@@ -108,6 +108,13 @@ function showUpdateBanner(swWaiting) {
     banner.querySelector('#sw-update-apply').addEventListener('click', () => {
         swWaiting.postMessage({ type: 'SKIP_WAITING' });
         banner.remove();
+        // Recarrega assim que o novo SW assumir o controle (controllerchange).
+        // O setTimeout é fallback caso o evento não dispare (ex.: sem SW anterior).
+        const t = setTimeout(() => window.location.reload(), 2000);
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            clearTimeout(t);
+            window.location.reload();
+        }, { once: true });
     });
 
     // Dispensar (vai atualizar na próxima abertura)

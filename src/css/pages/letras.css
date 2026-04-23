@@ -7,32 +7,57 @@
 
     #letras-menu {
         display: grid;
-        overflow-y: auto;
-        gap: 1px;
-        /* ── Badge de letra nova/modificada ── */
-        .card-list.letra-nova .numero {
-            position: relative;
-            &::after {
-                content: '';
-                position: absolute;
-                top: 4px; right: 4px;
-                width: 8px; height: 8px;
-                border-radius: 50%;
-                background: #f44336;
-                outline: 2px solid transparent;
-                outline-offset: 1px;
+        /* sem filtro: lista ocupa tudo menos o btn */
+        grid-template-rows: 1fr auto;
+        overflow: hidden;
+        gap: 0;
+        /* com filtro: filtro(auto) + lista(1fr) + btn(auto) */
+        &:has(#letras-filtro) {
+            grid-template-rows: auto 1fr auto;
+        }
+
+        /* ── Barra de filtro por categoria ── */
+        #letras-filtro {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            &::-webkit-scrollbar { display: none; }
+
+            .cat-filtro-chip {
+                flex-shrink: 0;
+                font-size: 11px;
+                font-weight: 700;
+                padding: 4px 12px;
+                border-radius: 100px;
+                border: 1px solid rgba(128,128,128,.25);
+                cursor: pointer;
+                transition: background .15s, color .15s, border-color .15s;
+                white-space: nowrap;
+                pointer-events: all;
             }
+            .cat-filtro-chip-ativo {
+                background: var(--piece-c-secondary, #6750a4) !important;
+                color: #fff !important;
+                border-color: transparent !important;
+            }
+        }
+
+        /* ── Lista de cartas ── */
+        .letras-lista {
+            overflow-y: auto;
+            display: grid;
+            align-content: start;
+            gap: 1px;
         }
 
         .card-list {
             display: grid;
-            grid-template-columns: auto 1fr;
+            grid-template-columns: auto 1fr auto;
             gap: 16px;
             padding: 16px;
             align-items: center;
-            /* position: sticky; */
-            /* top: 0; */
-            /* z-index: 1; */
             * {pointer-events: none;}
             .numero {
                 width: 48px;
@@ -52,6 +77,30 @@
                 font-size: 12px;
                 border-radius: 4px;
                 text-align: start;
+            }
+            /* chips de categoria dentro do card */
+            .cat-chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                margin-top: 4px;
+                .cat-chip {
+                    font-size: 10px;
+                    font-weight: 700;
+                    padding: 2px 8px;
+                    border-radius: 100px;
+                }
+            }
+            .badge-letra {
+                align-self: center;
+                font-size: 10px;
+                font-weight: 700;
+                padding: 3px 8px;
+                border-radius: 100px;
+                background: #f44336;
+                color: #fff;
+                white-space: nowrap;
+                pointer-events: none;
             }
         }
     }
