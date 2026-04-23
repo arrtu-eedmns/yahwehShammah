@@ -9,7 +9,7 @@
 // ─────────────────────────────────────────────────────────────
 
 // ── Versão: mude aqui a cada deploy para disparar atualização ──
-const CACHE_VERSION = 'v19';
+const CACHE_VERSION = 'v21';
 
 const CACHE_LOCAL    = `ys-local-${CACHE_VERSION}`;
 const CACHE_EXTERNAL = 'ys-external'; // não tem versão — assets CDN são estáveis

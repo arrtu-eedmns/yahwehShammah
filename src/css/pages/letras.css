@@ -1,3 +1,59 @@
+/* Botão de busca no header — só aparece no mobile */
+#letras-header-search-btn { display: none; }
+
+@media (max-width: 768px) {
+    /* Mobile: esconde barra inline, mostra botão no header */
+    #letras-search-bar { display: none !important; }
+
+    /* Posiciona o botão à direita dentro do header */
+    #m-header { position: relative; }
+    #letras-header-search-btn {
+        display: flex;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+/* Cards dentro do bottom sheet de busca */
+#letras-busca-resultados button {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    padding: 12px 16px;
+    align-items: center;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    text-align: start;
+
+    .busca-numero {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        font-weight: 900;
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+    .busca-nome   { font-size: 13px; font-weight: 700; }
+    .busca-cantor { font-size: 12px; opacity: .6; }
+    .busca-cats   {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 4px;
+        span {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+        }
+    }
+}
+
 #view-letras {
     display: grid;
     overflow: hidden;
@@ -6,18 +62,43 @@
     /* grid-template-columns: 1fr 1px 3fr; */
 
     #letras-menu {
-        display: grid;
-        /* sem filtro: lista ocupa tudo menos o btn */
-        grid-template-rows: 1fr auto;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
-        gap: 0;
-        /* com filtro: filtro(auto) + lista(1fr) + btn(auto) */
-        &:has(#letras-filtro) {
-            grid-template-rows: auto 1fr auto;
+
+        /* ── Barra de busca (desktop) ── */
+        #letras-search-bar {
+            flex-shrink: 0;
+            padding: 10px 12px 0;
+            #letras-search-inner {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                border: 1.5px solid;
+                border-radius: 100px;
+                padding: 6px 8px 6px 16px;
+                #letras-search-input {
+                    all: unset;
+                    flex: 1;
+                    font-size: 14px;
+                    &::placeholder { opacity: .5; }
+                }
+                #letras-search-clear {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 4px;
+                    color: inherit;
+                    opacity: .6;
+                    display: grid;
+                    place-items: center;
+                }
+            }
         }
 
         /* ── Barra de filtro por categoria ── */
         #letras-filtro {
+            flex-shrink: 0;
             display: flex;
             gap: 8px;
             padding: 10px 12px;
@@ -46,6 +127,7 @@
 
         /* ── Lista de cartas ── */
         .letras-lista {
+            flex: 1;
             overflow-y: auto;
             display: grid;
             align-content: start;
