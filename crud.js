@@ -73,7 +73,7 @@ else MPSO.newView({
         if (!localStorage.getItem('crud-key')) return
 
         // Garante que todos os docs têm _k antes de qualquer operação
-        this.migrarChave()
+        //this.migrarChave()
 
         view.appendAll(this.create(/*html*/`
             <style>
