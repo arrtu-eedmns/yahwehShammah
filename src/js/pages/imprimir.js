@@ -1,7 +1,7 @@
 MPSO.newView({
     name: "Imprimir",
     icon: "print",
-    showInNavigation: !!localStorage.getItem('crud-module') || localStorage.getItem('print-view') === 'true',
+    showInNavigation: !!localStorage.getItem('crud-key') || localStorage.getItem('print-view') === 'true',
 
     // ─── Estado ──────────────────────────────────────────────
     state: {
